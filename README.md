@@ -38,6 +38,7 @@ The player should feel stressed and paranoid. As the enemy is moving throughout 
 
     -   Pick up items: items have specific uses that allow the player to progress or give them an advantage. This could mean a key to unlock a door, or a weapon to temporarily fight off the enemy.
     -   Enemy: is always trying to move toward the player, navigating the house and attempting to catch and kill the player. The enemy provides pressure needed to force the player to progress through the levels. The enemy is intended to add to the horror aspect of the game, instead of it just being a puzzle platformer.
+    -   Obstacles/Traps: things that will slow the player down and allow the enemy to get close to the player. Makes the player think about how they move around and watch where they step.
 
 
 3.  Progression
