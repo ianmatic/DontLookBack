@@ -1,4 +1,4 @@
-# FunWithGit _(Game Name)_
+# Run and Look Back
 
 ### On The Spot
 
@@ -54,4 +54,5 @@ A single level will be our MVI. It will contain a 2D cross section of a multi-st
 
 #### References
 
-Pease add a short description of how this is relevant to your game (mechanic, art, theme, etc.). There is no limit to how many references you can have.
+Visual/Structural Reference - The cross section, multi storied 2d design of the buildings in GunPoint will be a reference for our visual/level designs
+![alt text](https://steamcdn-a.akamaihd.net/steam/apps/206190/ss_74d9eee2fe86c3d269940349d767509706a52742.1920x1080.jpg?t=1568026744 "Gun Point")
