@@ -57,3 +57,15 @@ A single level will be our MVI. It will contain a 2D cross section of a multi-st
 
 Visual/Structural Reference (Gun Point) - The cross section, multi storied 2d design of the buildings in Gun Point will be a reference for our visual/level designs
 ![alt text](https://steamcdn-a.akamaihd.net/steam/apps/206190/ss_74d9eee2fe86c3d269940349d767509706a52742.1920x1080.jpg?t=1568026744 "Gun Point")
+
+Visual Reference (Darq) - The tight camera and utilization of a flashlight will be used to increase tension and sense of mystery, similar to in Darq.
+![alt text](https://i2.wp.com/prodigygamers.com/wp-content/uploads/2017/05/rsz_darq.jpg?fit=640%2C360&ssl=1 "Darq")
+
+Visual Reference (Limbo) - The minimalistic art style and muted colors like in Limbo will be used to better control contrast between background, foreground, and important objects (such as items). We may also use a film-grain effect.
+![alt text](https://www.vegard.net/wp-content/uploads/2011/08/Limbo-2011-08-13-00-32-20-32.jpg "Limbo")
+
+Gameplay Reference (Alien: Isolation) - The core tension of our game comes from the high degree of power/control a single enemy has over the player, similar to in Alien: Isolation.
+![alt text](https://i.kinja-img.com/gawker-media/image/upload/s--aDZiYWZq--/c_scale,f_auto,fl_progressive,q_80,w_800/veuxgl6ltgvwsvsf3cdx.jpg "Alien Isolation")
+
+Gameplay/UI Reference - The icons for item pickups and door opening mechanic are similar to the ones found in This War of Mine. Both game also feature puzzle aspects to traversing the building.
+![alt text](https://images.stopgame.ru/uploads/images/160812/form/2015/08/20/1440072216.jpg "This War of Mine")
