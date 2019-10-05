@@ -59,6 +59,7 @@ Visual/Structural Reference (Gun Point) - The cross section, multi storied 2d de
 ![alt text](https://steamcdn-a.akamaihd.net/steam/apps/206190/ss_74d9eee2fe86c3d269940349d767509706a52742.1920x1080.jpg?t=1568026744 "Gun Point")
 
 Visual Reference (Darq) - The tight camera and utilization of a flashlight will be used to increase tension and sense of mystery, similar to in Darq.
+
 ![alt text](https://i2.wp.com/prodigygamers.com/wp-content/uploads/2017/05/rsz_darq.jpg?fit=640%2C360&ssl=1 "Darq")
 
 Visual Reference (Limbo) - The minimalistic art style and muted colors like in Limbo will be used to better control contrast between background, foreground, and important objects (such as items). We may also use a film-grain effect.
