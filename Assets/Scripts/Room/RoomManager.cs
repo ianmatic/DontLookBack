@@ -44,4 +44,16 @@ public class RoomManager : MonoBehaviour
         currentPlayerRoom = roomEntered;
         Debug.Log("The player's room is now " + roomEntered.name);
     }
+    public GameObject[] RoomList
+    {
+        get { return roomList; }
+    }
+    public GameObject[] EnemyList
+    {
+        get { return enemyList; }
+    }
+    public GameObject[] EnemyRoomList
+    {
+        get { return enemyRoomList; }
+    }
 }
