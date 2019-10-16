@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - testTag
+  - Room
+  - Enemy
   layers:
   - Default
   - TransparentFX
