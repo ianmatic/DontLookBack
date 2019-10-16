@@ -5,7 +5,6 @@ using UnityEngine;
 public class Ladder : MonoBehaviour
 {
     GameObject player;
-    SpriteRenderer playerSprite;
     SpriteRenderer sprite;
 
     int state;
@@ -14,7 +13,6 @@ public class Ladder : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         sprite = gameObject.GetComponent<SpriteRenderer>();
-        playerSprite = player.GetComponent<SpriteRenderer>();
 
         state = 0;
     }
@@ -43,9 +41,6 @@ public class Ladder : MonoBehaviour
 
     bool PlayerOnLadder() // Checks if the sprites are within bounds of each other.
     {
-        if (sprite.bounds.Intersects(playerSprite.bounds))       
-            return true;
-        else
-            return false;
+        return sprite.bounds.Intersects(player.GetComponent<BoxCollider>().bounds);
     }
 }

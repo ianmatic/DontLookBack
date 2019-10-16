@@ -5,7 +5,6 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     GameObject player;
-    SpriteRenderer playerSprite;
     SpriteRenderer sprite;
     BoxCollider2D spriteBox;
 
@@ -16,7 +15,6 @@ public class Door : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         sprite = gameObject.GetComponent<SpriteRenderer>();
-        playerSprite = player.GetComponent<SpriteRenderer>();
         spriteBox = gameObject.GetComponent<BoxCollider2D>();
 
         doorOpen = false;
@@ -43,9 +41,6 @@ public class Door : MonoBehaviour
 
     bool NearDoor() // Checks if a player is near the door
     {
-        if (sprite.bounds.Intersects(playerSprite.bounds))
-            return true;
-        else
-            return false;
+        return sprite.bounds.Intersects(player.GetComponent<BoxCollider>().bounds);
     }
 }

@@ -47,16 +47,13 @@ public class enemyPathfinding : MonoBehaviour
         //TESTING:  sets test player floor,position, and gameobject position
         playerRealFloor = 2;
         playerRoom = 1;
-        playerPosition = House[playerRealFloor][playerFloor][1] + new Vector2(0.49f,0); //TESTING: Random Vector to ensure enemy will always stop on player
-        player.transform.position = new Vector3(playerPosition.x, playerPosition.y, 0);
+        playerPosition = player.transform.position + new Vector3(0.49f,0, 0);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        //TESTING: sets player GameObject's position (For when changing playerRealFloor)
-        player.transform.position = new Vector3(player.transform.position.x, playerRealFloor * 4f, 0);
         
         //Grabs the player's Position
         playerPosition = player.transform.position;
