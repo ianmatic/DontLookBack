@@ -57,11 +57,12 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        position += movement;
-        transform.position = position;
+        //position += movement;
+
+        transform.position += new Vector3(movement.x, movement.y); // Changed this so collisions could work. - TJ
     }
 
-    void ToggleVertical()
+    public void ToggleVertical()
     {
         verticalMove = !verticalMove;
     }
