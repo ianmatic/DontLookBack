@@ -21,7 +21,7 @@ public class enemyPathfinding : MonoBehaviour
     Vector2 enemyDestination; //Immidiate Position that Enemy is walking to.
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
     float enemySpeed = 0.04f; //Enemy Speed    Climbing speed is half.
-    float roomHeight = 4f; //Room Height: Used only in Testing with Player object
+    float roomHeight = 5f; //Room Height: Used only in Testing with Player object
 
     /// <summary>
     /// House Consists of several Lists:   From Outer to Inner:
@@ -31,7 +31,7 @@ public class enemyPathfinding : MonoBehaviour
     ///     3a. Vector2D (Ladder: 0=No/1=Yes, Direction: 0=Down/1=Up)
     ///     3b. Vector2D (Center of Room)
     /// </summary>
-    List<List<List<Vector2>>> House; 
+    public List<List<List<Vector2>>> House; 
 
     // Start is called before the first frame update
     void Start()
@@ -40,14 +40,14 @@ public class enemyPathfinding : MonoBehaviour
         House = getRooms();
 
         //Set Initial enemy Floor, set enemyPosition (Certain Room), and set GameObject position
-        enemyFloor = 0;
-        enemyPosition = House[enemyFloor][4][1];
+        enemyFloor = 2;
+        enemyPosition = House[enemyFloor][2][1];
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
 
         //TESTING:  sets test player floor,position, and gameobject position
-        playerRealFloor = 2;
-        playerRoom = 1;
-        playerPosition = player.transform.position + new Vector3(0.49f,0, 0);
+        //playerRealFloor = 2;
+        //playerRoom = 1;
+        //playerPosition = player.transform.position + new Vector3(0.49f,0, 0);
 
     }
 
@@ -57,8 +57,21 @@ public class enemyPathfinding : MonoBehaviour
         
         //Grabs the player's Position
         playerPosition = player.transform.position;
+
+        if(player.transform.position.y < 2)
+        {
+            playerFloor = 0;
+        }
+        else if(player.transform.position.y > 7)
+        {
+            playerFloor = 2;
+        }
+        else
+        {
+            playerFloor = 1;
+        }
         //Create new Destination if not on ladder
-        if (enemyPosition.y == enemyFloor * roomHeight){
+        if (enemyPosition.y == enemyFloor * roomHeight - 2){
             createPathToPLayer();
         }
         //Move to Destination
@@ -144,7 +157,7 @@ public class enemyPathfinding : MonoBehaviour
     void createPathToPLayer()
     {
         //Get player floor (Will get information less directly in future)
-        playerFloor = playerRealFloor;
+        //playerFloor = playerRealFloor;
         //Floor Check
         if(enemyFloor == playerFloor)
         {
@@ -180,16 +193,19 @@ public class enemyPathfinding : MonoBehaviour
         //Initial Ladder Room is invalid. POSSIBLE BREAK: If no floor on floor
         int ladderRoom = -1;
         //Loop: Each Room on Floor
+        Debug.Log(floor);
+        Debug.Log(playerFloor);
+        Debug.Log(enemyFloor);
         for (int i = 0; i < House[floor].Count; i++)
         {
             //Check: Room is Ladder AND going correct direction
-            if(House[floor][i][0].x == 1 && House[floor][i][0].y == direction)
+            if(House[floor][i][0].x == 1 && House[floor][i][0].y == direction || House[floor][i][0].y == 2)
             {
                 //Check: If NOT first ladderRoom found
                 if (ladderRoom != -1)
                 {
                     //Check: If distance to Ladder is less than previous ladderRoom
-                    if(House[floor][i][1].x - enemyPosition.x < House[floor][ladderRoom][1].x - enemyPosition.x)
+                    if (Mathf.Abs(House[floor][i][1].x - enemyPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - enemyPosition.x))
                     {
                         ladderRoom = i;
                     }
@@ -219,8 +235,8 @@ public class enemyPathfinding : MonoBehaviour
         {
             //Add Floor
             Rooms.Add(new List<List<Vector2>>());
-            //For each Room: 5
-            for (int j = 0; j < 5; j++)
+            //For each Room: 3
+            for (int j = 0; j < 3; j++)
             {
                 //Add Room
                 Rooms[i].Add(new List<Vector2>());
@@ -228,7 +244,7 @@ public class enemyPathfinding : MonoBehaviour
                 for (int k = 0; k < 2; k++)
                 {
                     //SETS first variable to (0,0) IE: Not a ladder.   Sets Position in incremtes of 2fx and 4fy
-                    Rooms[i][j].Add(new Vector2(k * (j * 2f), k * (i * 4f)));
+                    Rooms[i][j].Add(new Vector2(k * ((j * 10f)-10f), k * (i * 5f)-2f));
                     //Debug.Log(Rooms[i][j][k]); //TESTING: Print each Room
                 }
                 //Debug.Log("Room Done"); //TESTING: Room Done Creation
@@ -240,10 +256,15 @@ public class enemyPathfinding : MonoBehaviour
         //TESTING: Manually Set certain Rooms as Ladders.
         //Room 0 of Floor 0 and 1
         Rooms[0][0][0] = new Vector2(1f, 1f); //UP
-        Rooms[1][0][0] = new Vector2(1f, 0f); //Down
-        //Room 4 of Floor 1 and 2
-        Rooms[1][4][0] = new Vector2(1f, 1f); //UP
-        Rooms[2][4][0] = new Vector2(1f, 0f); //Down
+        Rooms[1][0][0] = new Vector2(1f, 2f); //UP/Down
+        Rooms[2][0][0] = new Vector2(1f, 0f); //Down
+
+        Rooms[1][1][0] = new Vector2(1f, 1f); //UP
+        Rooms[2][1][0] = new Vector2(1f, 0f); //UP/Down
+
+        Rooms[0][2][0] = new Vector2(1f, 1f); //UP
+        Rooms[1][2][0] = new Vector2(1f, 2f); //UP/Down
+        Rooms[2][2][0] = new Vector2(1f, 0f); //Down
 
         //Return Finished Rooms
         return Rooms;
