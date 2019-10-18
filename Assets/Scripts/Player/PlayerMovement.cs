@@ -34,6 +34,20 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ChangeMovement();
+        CheckCollisions();
+        MovePlayer();
+    }
+
+    void CheckCollisions()
+    {
+        LadderCollision();
+        DoorCollision();
+        RoomCollision();
+    }
+
+    void LadderCollision()
+    {
         switch (specialPlayerState) // Switches between whether the player is on the ladder or off the ladder. 
         {
             case SpecialPlayerState.None: // Off ladder
@@ -51,14 +65,6 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
         }
-        CheckCollision();
-        ChangeMovement();
-        MovePlayer();
-    }
-
-    void CheckCollision()
-    {
-
     }
 
     bool PlayerOnLadder()
@@ -71,6 +77,47 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return false; // not touching any ladder
+    }
+
+    void DoorCollision()
+    {
+
+    }
+
+    //Checks for each room and looks at wall collisions
+    void RoomCollision()
+    {
+        foreach (GameObject room in roomManager.RoomList)
+        {
+            CheckWallCollision(room.transform.GetChild(2));
+        }
+    }
+
+    //Finds all 4 walls to the room and checks for collision
+    void CheckWallCollision(Transform roomWalls)
+    {
+        for(int i = 1; i < roomWalls.childCount; i++)
+        {
+            Transform wall = roomWalls.GetChild(i);
+            if (wall.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+            {
+                if(wall.gameObject.name == "LeftWall")
+                {
+                    movement.x = 0;
+                    transform.position = new Vector3(wall.position.x + wall.lossyScale.z + (transform.localScale.x / 2), transform.position.y);
+                }
+                if (wall.gameObject.name == "RightWall")
+                {
+                    movement.x = 0;
+                    transform.position = new Vector3(wall.position.x - wall.lossyScale.z - (transform.localScale.x / 2), transform.position.y);
+                }
+                if (wall.gameObject.name == "BottomWall" && specialPlayerState != SpecialPlayerState.OnLadder)
+                {
+                    movement.y = 0;
+                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.lossyScale.y + (transform.localScale.y / 2));
+                }
+            }
+        }
     }
 
     void ChangeMovement()
