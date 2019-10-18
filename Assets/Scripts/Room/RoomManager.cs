@@ -11,7 +11,7 @@ public class RoomManager : MonoBehaviour
     private GameObject currentPlayerRoom;
     private GameObject oldPlayerRoom;
     private GameObject player;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +24,7 @@ public class RoomManager : MonoBehaviour
         ladderList = new List<GameObject>();
         ladderList.AddRange(GameObject.FindGameObjectsWithTag("Ladder"));
         player = GameObject.FindGameObjectWithTag("Player");
+        SetupCollision();
     }
 
     void Update()
@@ -36,16 +37,33 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+
+    void SetupCollision()
+    {
+        foreach(GameObject room in roomList)
+        {
+            foreach (Transform child in room.transform)
+            {
+                if (child.GetComponent<WallProperties>() && child.GetComponent<WallProperties>().isPasable) //ignore passable walls
+                {
+                    Physics.IgnoreCollision(player.GetComponent<BoxCollider>(), child.GetComponent<BoxCollider>());
+                }
+            }
+            // ignore room collider
+            Physics.IgnoreCollision(player.GetComponent<BoxCollider>(), room.GetComponent<BoxCollider>());
+        }
+    }
+
     /// <summary>
     /// Function to update current enemy position, written in this way so as to allow for multiple killers later in development while still being handled in the manager. As of now will be called from the backwall's box collider
     /// </summary>
     /// <param name="enemyCollision">Enemy object's collision</param>
     /// <param name="roomEntered">Room that the enemy entered</param>
-    public void UpdateEnemyRoom(Collider enemyCollision,GameObject roomEntered)
+    public void UpdateEnemyRoom(Collider enemyCollision, GameObject roomEntered)
     {
-        for (int i = 0; i< enemyList.Count;i++)
+        for (int i = 0; i < enemyList.Count; i++)
         {
-            if(enemyList[i] == enemyCollision.gameObject)
+            if (enemyList[i] == enemyCollision.gameObject)
             {
                 enemyRoomList[i] = roomEntered;
                 Debug.Log(enemyList[i].name + "'s room is now " + roomEntered.name);
@@ -60,16 +78,32 @@ public class RoomManager : MonoBehaviour
     /// <param name="room"></param>
     private void TransitionToRoom(GameObject room)
     {
-        // disable light and camera in old room
-        currentPlayerRoom.transform.GetChild(0).gameObject.SetActive(false);
-        currentPlayerRoom.transform.GetChild(1).gameObject.SetActive(false);
+        // disable light and camera in old room, if it is set (won't be for first frame)
+        if (oldPlayerRoom)
+        {
+            foreach (Transform child in oldPlayerRoom.transform)
+            {
+                if (child.tag == "MainCamera" || child.name == "Spot Light")
+                {
+                    child.gameObject.SetActive(false);
+                }
+
+                if (child.name == "BottomWall")
+                {
+                    child.GetComponent<WallProperties>().isPasable = false;
+                }
+            }
+        }
+
 
         // turn on light and camera in new room
-        room.transform.GetChild(0).gameObject.SetActive(true);
-        room.transform.GetChild(1).gameObject.SetActive(true);
-
-        // set current room as new room
-        currentPlayerRoom = room;
+        foreach (Transform child in room.transform)
+        {
+            if (child.tag == "MainCamera" || child.name == "Spot Light")
+            {
+                child.gameObject.SetActive(true);
+            }
+        }
     }
 
     /// <summary>

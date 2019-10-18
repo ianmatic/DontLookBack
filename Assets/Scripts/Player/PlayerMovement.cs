@@ -55,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     verticalMove = true;
                     specialPlayerState = SpecialPlayerState.OnLadder;
+                    GetComponent<Rigidbody>().useGravity = false;
                 }
                 break;
             case SpecialPlayerState.OnLadder: // On ladder
@@ -62,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     verticalMove = false;
                     specialPlayerState = SpecialPlayerState.None;
+                    GetComponent<Rigidbody>().useGravity = true;
                 }
                 break;
         }
@@ -96,28 +98,28 @@ public class PlayerMovement : MonoBehaviour
     //Finds all 4 walls to the room and checks for collision
     void CheckWallCollision(Transform roomWalls)
     {
-        for(int i = 1; i < roomWalls.childCount; i++)
-        {
-            Transform wall = roomWalls.GetChild(i);
-            if (wall.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
-            {
-                if(wall.gameObject.name == "LeftWall")
-                {
-                    movement.x = 0;
-                    transform.position = new Vector3(wall.position.x + wall.lossyScale.z + (transform.localScale.x / 2), transform.position.y);
-                }
-                if (wall.gameObject.name == "RightWall")
-                {
-                    movement.x = 0;
-                    transform.position = new Vector3(wall.position.x - wall.lossyScale.z - (transform.localScale.x / 2), transform.position.y);
-                }
-                if (wall.gameObject.name == "BottomWall" && specialPlayerState != SpecialPlayerState.OnLadder)
-                {
-                    movement.y = 0;
-                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.lossyScale.y + (transform.localScale.y / 2));
-                }
-            }
-        }
+        //for(int i = 1; i < roomWalls.childCount; i++) // skip ground
+        //{
+        //    Transform wall = roomWalls.GetChild(i);
+        //    if (wall.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+        //    {
+        //        if(wall.gameObject.name == "LeftWall")
+        //        {
+        //            movement.x = 0;
+        //            transform.position = new Vector3(wall.position.x + wall.lossyScale.z + (transform.localScale.x / 2), transform.position.y);
+        //        }
+        //        if (wall.gameObject.name == "RightWall")
+        //        {
+        //            movement.x = 0;
+        //            transform.position = new Vector3(wall.position.x - wall.lossyScale.z - (transform.localScale.x / 2), transform.position.y);
+        //        }
+        //        if (wall.gameObject.name == "BottomWall" && !wall.GetComponent<WallProperties>().isPasable)
+        //        {
+        //            movement.y = 0;
+        //            transform.position = new Vector3(transform.position.x, wall.position.y + wall.lossyScale.y + (transform.localScale.y / 2));
+        //        }
+        //    }
+        //}
     }
 
     void ChangeMovement()
@@ -143,13 +145,13 @@ public class PlayerMovement : MonoBehaviour
             movement = new Vector3(0.0f, 0.0f);
         }
 
-        movement *= speed * Time.deltaTime;
+        movement *= speed;
     }
 
     void MovePlayer()
     {
         //position += movement;
-
-        transform.position += movement; // Changed this so collisions could work. - TJ
+        GetComponent<Rigidbody>().velocity = movement;
+        /*transform.position += movement;*/ // Changed this so collisions could work. - TJ
     }
 }

@@ -195,9 +195,9 @@ public class enemyPathfinding : MonoBehaviour
         //Initial Ladder Room is invalid. POSSIBLE BREAK: If no floor on floor
         int ladderRoom = -1;
         //Loop: Each Room on Floor
-        Debug.Log(floor);
-        Debug.Log(playerFloor);
-        Debug.Log(enemyFloor);
+        Debug.Log("floor " + floor);
+        Debug.Log("playerFloor " + playerFloor);
+        Debug.Log("enemyFloor " + enemyFloor);
         for (int i = 0; i < House[floor].Count; i++)
         {
             //Check: Room is Ladder AND going correct direction
