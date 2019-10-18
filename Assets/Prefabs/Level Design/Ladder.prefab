@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3623752978376722467}
   - component: {fileID: 4583758562923711987}
-  - component: {fileID: 7805071369839381303}
+  - component: {fileID: 6568650595408173801}
   m_Layer: 0
   m_Name: Ladder
-  m_TagString: Untagged
+  m_TagString: Ladder
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7805071369839381303
+--- !u!114 &6568650595408173801
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

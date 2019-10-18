@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+enum SpecialPlayerState
+{
+    OnLadder,
+    None
+}
+
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -9,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 movement;
     private bool verticalMove;
     private bool horizontalMove;
+    private SpecialPlayerState specialPlayerState = SpecialPlayerState.None;
+    private RoomManager roomManager;
 
     // Start is called before the first frame update
     void Start()
@@ -20,11 +28,29 @@ public class PlayerMovement : MonoBehaviour
         movement = new Vector3(0.0f, 0.0f);
         verticalMove = false;
         horizontalMove = true;
+        roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        switch (specialPlayerState) // Switches between whether the player is on the ladder or off the ladder. 
+        {
+            case SpecialPlayerState.None: // Off ladder
+                if (PlayerOnLadder()) // touching ladder
+                {
+                    verticalMove = true;
+                    specialPlayerState = SpecialPlayerState.OnLadder;
+                }
+                break;
+            case SpecialPlayerState.OnLadder: // On ladder
+                if (!PlayerOnLadder()) // no longer touching ladder
+                {
+                    verticalMove = false;
+                    specialPlayerState = SpecialPlayerState.None;
+                }
+                break;
+        }
         CheckCollision();
         ChangeMovement();
         MovePlayer();
@@ -33,6 +59,18 @@ public class PlayerMovement : MonoBehaviour
     void CheckCollision()
     {
 
+    }
+
+    bool PlayerOnLadder()
+    {
+        foreach (GameObject ladder in roomManager.LadderList)
+        {
+            if (ladder.GetComponent<Renderer>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+            {
+                return true; // touching some ladder
+            }
+        }
+        return false; // not touching any ladder
     }
 
     void ChangeMovement()
@@ -66,10 +104,5 @@ public class PlayerMovement : MonoBehaviour
         //position += movement;
 
         transform.position += movement; // Changed this so collisions could work. - TJ
-    }
-
-    public void ToggleVertical()
-    {
-        verticalMove = !verticalMove;
     }
 }
