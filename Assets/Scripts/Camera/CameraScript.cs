@@ -19,13 +19,21 @@ public class CameraScript : MonoBehaviour
 
     void SetupVirtualCameras()
     {
-        GameObject virCam;
         foreach (GameObject room in roomManager.RoomList)
         {
-            virCam = room.transform.GetChild(0).gameObject;
-            virCam.GetComponent<Cinemachine.CinemachineVirtualCamera>().Follow = player.transform;
-            virCam.SetActive(false);
-            room.transform.GetChild(1).gameObject.SetActive(false);
+            foreach (Transform child in room.transform)
+            {
+                // setup camera
+                if (child.tag == "MainCamera")
+                {
+                    child.GetComponent<Cinemachine.CinemachineVirtualCamera>().Follow = player.transform;
+                    child.gameObject.SetActive(false);
+                } 
+                else if (child.name == "Spot Light") // setup light
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }
         }
     }
 }
