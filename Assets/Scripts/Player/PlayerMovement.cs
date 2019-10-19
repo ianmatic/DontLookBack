@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckCollisions()
     {
+        EnemyCollision();
         LadderCollision();
         DoorCollision();
         RoomCollision();
@@ -133,6 +134,25 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Check collision with enemy(s)
+    /// </summary>
+    void EnemyCollision()
+    {
+        if (GetComponent<Renderer>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Renderer>().bounds))
+        {
+            KillPlayer();
+        }
+    }
+
+    /// <summary>
+    /// Kills the player and presents game over screen or restarts game
+    /// </summary>
+    void KillPlayer()
+    {
+        gameObject.SetActive(false);
     }
 
     void ChangeMovement()
