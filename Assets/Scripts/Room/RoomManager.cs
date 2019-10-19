@@ -36,23 +36,6 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-
-    void SetupCollision()
-    {
-        foreach(GameObject room in roomList)
-        {
-            foreach (Transform child in room.transform)
-            {
-                if (child.GetComponent<WallProperties>() && child.GetComponent<WallProperties>().isPasable) //ignore passable walls
-                {
-                    Physics.IgnoreCollision(player.GetComponent<BoxCollider>(), child.GetComponent<BoxCollider>());
-                }
-            }
-            // ignore room collider
-            Physics.IgnoreCollision(player.GetComponent<BoxCollider>(), room.GetComponent<BoxCollider>());
-        }
-    }
-
     /// <summary>
     /// Function to update current enemy position, written in this way so as to allow for multiple killers later in development while still being handled in the manager. As of now will be called from the backwall's box collider
     /// </summary>
