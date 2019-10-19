@@ -24,7 +24,6 @@ public class RoomManager : MonoBehaviour
         ladderList = new List<GameObject>();
         ladderList.AddRange(GameObject.FindGameObjectsWithTag("Ladder"));
         player = GameObject.FindGameObjectWithTag("Player");
-        SetupCollision();
     }
 
     void Update()
@@ -86,11 +85,6 @@ public class RoomManager : MonoBehaviour
                 if (child.tag == "MainCamera" || child.name == "Spot Light")
                 {
                     child.gameObject.SetActive(false);
-                }
-
-                if (child.name == "BottomWall")
-                {
-                    child.GetComponent<WallProperties>().isPasable = false;
                 }
             }
         }

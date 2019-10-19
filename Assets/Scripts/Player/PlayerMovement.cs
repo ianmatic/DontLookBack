@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     private bool horizontalMove;
     private SpecialPlayerState specialPlayerState = SpecialPlayerState.None;
     private RoomManager roomManager;
+    private Vector3 futurePos;
+    private bool willCollide = false;
 
     // Start is called before the first frame update
     void Start()
@@ -29,11 +31,13 @@ public class PlayerMovement : MonoBehaviour
         verticalMove = false;
         horizontalMove = true;
         roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
+        futurePos = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
+        willCollide = false;
         ChangeMovement();
         CheckCollisions();
         MovePlayer();
@@ -55,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
                 {
                     verticalMove = true;
                     specialPlayerState = SpecialPlayerState.OnLadder;
-                    GetComponent<Rigidbody>().useGravity = false;
                 }
                 break;
             case SpecialPlayerState.OnLadder: // On ladder
@@ -63,7 +66,6 @@ public class PlayerMovement : MonoBehaviour
                 {
                     verticalMove = false;
                     specialPlayerState = SpecialPlayerState.None;
-                    GetComponent<Rigidbody>().useGravity = true;
                 }
                 break;
         }
@@ -91,52 +93,63 @@ public class PlayerMovement : MonoBehaviour
     {
         foreach (GameObject room in roomManager.RoomList)
         {
-            CheckWallCollision(room.transform.GetChild(2));
+            foreach (Transform child in room.transform)
+            {
+                if (child.name.Contains("Wall"))
+                {
+                    CheckWallCollision(child);
+                }
+            }
+
         }
     }
 
     //Finds all 4 walls to the room and checks for collision
-    void CheckWallCollision(Transform roomWalls)
+    void CheckWallCollision(Transform wall)
     {
-        //for(int i = 1; i < roomWalls.childCount; i++) // skip ground
-        //{
-        //    Transform wall = roomWalls.GetChild(i);
-        //    if (wall.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
-        //    {
-        //        if(wall.gameObject.name == "LeftWall")
-        //        {
-        //            movement.x = 0;
-        //            transform.position = new Vector3(wall.position.x + wall.lossyScale.z + (transform.localScale.x / 2), transform.position.y);
-        //        }
-        //        if (wall.gameObject.name == "RightWall")
-        //        {
-        //            movement.x = 0;
-        //            transform.position = new Vector3(wall.position.x - wall.lossyScale.z - (transform.localScale.x / 2), transform.position.y);
-        //        }
-        //        if (wall.gameObject.name == "BottomWall" && !wall.GetComponent<WallProperties>().isPasable)
-        //        {
-        //            movement.y = 0;
-        //            transform.position = new Vector3(transform.position.x, wall.position.y + wall.lossyScale.y + (transform.localScale.y / 2));
-        //        }
-        //    }
-        //}
+        Bounds futureBounds = new Bounds(futurePos, gameObject.GetComponent<Renderer>().bounds.size);
+        if (wall.GetComponent<BoxCollider>().bounds.Intersects(futureBounds))
+        {
+            if (wall.gameObject.name == "LeftWall")
+            {
+                movement.x = 0;
+                transform.position = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.size.x / 2 + (transform.localScale.x / 2) + 0.01f, transform.position.y);
+                willCollide = true;
+            }
+            if (wall.gameObject.name == "RightWall")
+            {
+                movement.x = 0;
+                transform.position = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.size.x / 2 - (transform.localScale.x / 2) + 0.01f, transform.position.y);
+                willCollide = true;
+            }
+            if (wall.gameObject.name == "BottomWall")
+            {
+                if ((specialPlayerState == SpecialPlayerState.OnLadder && !wall.GetComponent<WallProperties>().isPasable) || // trying to go through impassable wall on ladder
+                    (specialPlayerState != SpecialPlayerState.OnLadder)) // not on ladder, so apply collision for all walls 
+                {
+                    movement.y = 0;
+                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.01f);
+                    willCollide = true;
+                }
+            }
+        }
     }
 
     void ChangeMovement()
     {
-        if(horizontalMove && Input.GetKey(KeyCode.LeftArrow))
+        if (horizontalMove && Input.GetKey(KeyCode.LeftArrow))
         {
             movement = new Vector3(-1.0f, 0.0f);
         }
-        else if(horizontalMove && Input.GetKey(KeyCode.RightArrow))
+        else if (horizontalMove && Input.GetKey(KeyCode.RightArrow))
         {
             movement = new Vector3(1.0f, 0.0f);
         }
-        else if(verticalMove && Input.GetKey(KeyCode.UpArrow))
+        else if (verticalMove && Input.GetKey(KeyCode.UpArrow))
         {
             movement = new Vector3(0.0f, 1.0f);
         }
-        else if(verticalMove && Input.GetKey(KeyCode.DownArrow))
+        else if (verticalMove && Input.GetKey(KeyCode.DownArrow))
         {
             movement = new Vector3(0.0f, -1.0f);
         }
@@ -145,13 +158,16 @@ public class PlayerMovement : MonoBehaviour
             movement = new Vector3(0.0f, 0.0f);
         }
 
-        movement *= speed;
+        movement *= speed * Time.deltaTime;
+
+        futurePos = transform.position + movement; // where the player wants to go
     }
 
     void MovePlayer()
     {
-        //position += movement;
-        GetComponent<Rigidbody>().velocity = movement;
-        /*transform.position += movement;*/ // Changed this so collisions could work. - TJ
+        if (!willCollide) // safe to move to new pos
+        {
+            transform.position = futurePos; // Changed this so collisions could work. - TJ
+        }
     }
 }
