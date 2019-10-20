@@ -74,7 +74,7 @@ public class RoomManager : MonoBehaviour
 
 
         // turn on light and camera in new room
-        foreach (Transform child in room.transform)
+        foreach (Transform child in room.transform) 
         {
             if (child.tag == "MainCamera" || child.name == "Spot Light")
             {
