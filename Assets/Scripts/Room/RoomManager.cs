@@ -8,9 +8,11 @@ public class RoomManager : MonoBehaviour
     private List<GameObject> enemyList;
     private List<GameObject> enemyRoomList;
     private List<GameObject> ladderList;
+    private List<GameObject> stairList;
     private GameObject currentPlayerRoom;
     private GameObject oldPlayerRoom;
     private GameObject player;
+    private GameObject currentStair;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +25,9 @@ public class RoomManager : MonoBehaviour
         enemyRoomList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
         ladderList = new List<GameObject>();
         ladderList.AddRange(GameObject.FindGameObjectsWithTag("Ladder"));
+        stairList = new List<GameObject>();
+        stairList.AddRange(GameObject.FindGameObjectsWithTag("RightStair"));
+        stairList.AddRange(GameObject.FindGameObjectsWithTag("LeftStair"));
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
@@ -174,5 +179,14 @@ public class RoomManager : MonoBehaviour
     public List<GameObject> LadderList
     {
         get { return ladderList; }
+    }
+    public List<GameObject> StairList
+    {
+        get { return stairList; }
+    }
+    public GameObject CurrentStair
+    {
+        get { return currentStair; }
+        set { currentStair = value; }
     }
 }
