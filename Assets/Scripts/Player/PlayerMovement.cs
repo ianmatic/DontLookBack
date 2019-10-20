@@ -190,6 +190,7 @@ public class PlayerMovement : MonoBehaviour
     void KillPlayer()
     {
         gameObject.SetActive(false);
+        SceneLoader.LoadScene("endingScene");
     }
 
     void ChangeMovement()

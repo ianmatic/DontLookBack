@@ -418,7 +418,7 @@ PrefabInstance:
     - target: {fileID: 3623752978376722467, guid: 88549e48ec7fd4749ad998514629b862,
         type: 3}
       propertyPath: m_RootOrder
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 3623752978376722467, guid: 88549e48ec7fd4749ad998514629b862,
         type: 3}
@@ -537,12 +537,12 @@ GameObject:
   - component: {fileID: 454795519}
   - component: {fileID: 454795518}
   m_Layer: 0
-  m_Name: Spot Light
+  m_Name: DebugLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &454795518
 Light:
   m_ObjectHideFlags: 0
@@ -2422,7 +2422,7 @@ PrefabInstance:
     - target: {fileID: 9178639782396271097, guid: 36c68fe17d7164c439169a6bc14aacce,
         type: 3}
       propertyPath: m_RootOrder
-      value: 25
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 9178639782396271097, guid: 36c68fe17d7164c439169a6bc14aacce,
         type: 3}
