@@ -72,5 +72,15 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 4091053440419941509, guid: db1709cbcb0334a4ca7027131cca024f,
+        type: 3}
+      propertyPath: m_Name
+      value: LockDoor Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 4091053440419941508, guid: db1709cbcb0334a4ca7027131cca024f,
+        type: 3}
+      propertyPath: needKey
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db1709cbcb0334a4ca7027131cca024f, type: 3}

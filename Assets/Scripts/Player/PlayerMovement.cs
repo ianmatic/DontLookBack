@@ -111,11 +111,13 @@ public class PlayerMovement : MonoBehaviour
     {
         foreach (GameObject ladder in roomManager.LadderList)
         {
-            if (ladder.GetComponent<Renderer>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+            if (ladder.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
             {
+                gameObject.GetComponent<Rigidbody>().useGravity = false;
                 return true; // touching some ladder
             }
         }
+        gameObject.GetComponent<Rigidbody>().useGravity = true;
         return false; // not touching any ladder
     }
 
