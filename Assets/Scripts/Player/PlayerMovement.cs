@@ -73,14 +73,13 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void StairCollision()
     {
+        // end stair collision
         if (roomManager.CurrentStair) // has used stairs
         {
             Bounds topStair = roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
             Bounds bottomStair = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
             bool aboveTopStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y > topStair.center.y + topStair.extents.y; // bottom of player is above top stair
-            float temp = GetComponent<Renderer>().bounds.extents.y;
-            float result = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.05f;
-            bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.05f < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
+            bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.1f < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
             if (specialPlayerState == SpecialPlayerState.Stairs && // on stairs and above or below stairs
                 (aboveTopStair || belowBottomStair))
             {
@@ -88,9 +87,12 @@ public class PlayerMovement : MonoBehaviour
                 futurePos.z = 0;
                 specialPlayerState = SpecialPlayerState.None;
                 roomManager.CurrentStair = null;
+                gameObject.GetComponent<Rigidbody>().useGravity = true;
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
             }
         }
 
+        // start stair collision
         foreach (GameObject stair in roomManager.StairList)
         {
             Bounds topStair = stair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
@@ -98,10 +100,12 @@ public class PlayerMovement : MonoBehaviour
             if ((GetComponent<Collider>().bounds.Intersects(bottomStair) || GetComponent<Collider>().bounds.Intersects(topStair)) // touching the stairs while not already on them
                 && specialPlayerState != SpecialPlayerState.Stairs)
             {
-                if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.UpArrow)) // need to press appropriate key to start climbing stairs
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.UpArrow)) // need to press appropriate key to start climbing stairs
                 {
                     specialPlayerState = SpecialPlayerState.Stairs;
                     roomManager.CurrentStair = stair;
+                    gameObject.GetComponent<Rigidbody>().useGravity = false;
+                    gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 }
             }            
         }
@@ -169,7 +173,8 @@ public class PlayerMovement : MonoBehaviour
                     (specialPlayerState == SpecialPlayerState.None)) // not on ladder nor stairs, so apply collision for all walls 
                 {
                     movement.y = 0;
-                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.01f);
+                    // super small number added to y to prevent stuck in collisions, but so small that gravity induced jitter can't be seen
+                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.000001f);
                     willCollide = true;
                 }
             }
