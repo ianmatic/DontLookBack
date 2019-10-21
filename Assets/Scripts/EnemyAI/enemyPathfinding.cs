@@ -58,11 +58,11 @@ public class enemyPathfinding : MonoBehaviour
         //Grabs the player's Position
         playerPosition = player.transform.position;
 
-        if(player.transform.position.y < 2)
+        if(player.transform.position.y < -1)
         {
             playerFloor = 0;
         }
-        else if(player.transform.position.y > 7)
+        else if(player.transform.position.y > 4)
         {
             playerFloor = 2;
         }
