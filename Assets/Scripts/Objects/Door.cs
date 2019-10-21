@@ -5,8 +5,7 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     GameObject player;
-    SpriteRenderer sprite;
-    BoxCollider2D spriteBox;
+    Animator animator;
 
     bool doorOpen;
     public bool needKey;
@@ -14,8 +13,7 @@ public class Door : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        sprite = gameObject.GetComponent<SpriteRenderer>();
-        spriteBox = gameObject.GetComponent<BoxCollider2D>();
+        animator = gameObject.GetComponent<Animator>();
 
         doorOpen = false;
     }
@@ -32,8 +30,7 @@ public class Door : MonoBehaviour
                 }
                 else // Changes the state of the box collider and whether the door is open
                 {
-                    doorOpen = !doorOpen;
-                    spriteBox.enabled = !spriteBox.enabled;
+                    animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
                 }
             }
         }
@@ -41,6 +38,6 @@ public class Door : MonoBehaviour
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return sprite.bounds.Intersects(player.GetComponent<BoxCollider>().bounds);
+        return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
     }
 }

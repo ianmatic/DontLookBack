@@ -22,6 +22,7 @@ public class enemyPathfinding : MonoBehaviour
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
     float enemySpeed = 0.04f; //Enemy Speed    Climbing speed is half.
     float roomHeight = 5f; //Room Height: Used only in Testing with Player object
+    RoomManager roomManager;
 
     /// <summary>
     /// House Consists of several Lists:   From Outer to Inner:
@@ -37,7 +38,8 @@ public class enemyPathfinding : MonoBehaviour
     void Start()
     {
         //Retrive Room details from (getRooms)  Will pull from Room script in the future.
-        House = getRooms();
+        roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
+        House = roomManager.buildHouse();
 
         //Set Initial enemy Floor, set enemyPosition (Certain Room), and set GameObject position
         enemyFloor = 2;
@@ -193,9 +195,9 @@ public class enemyPathfinding : MonoBehaviour
         //Initial Ladder Room is invalid. POSSIBLE BREAK: If no floor on floor
         int ladderRoom = -1;
         //Loop: Each Room on Floor
-        Debug.Log(floor);
-        Debug.Log(playerFloor);
-        Debug.Log(enemyFloor);
+        Debug.Log("floor " + floor);
+        Debug.Log("playerFloor " + playerFloor);
+        Debug.Log("enemyFloor " + enemyFloor);
         for (int i = 0; i < House[floor].Count; i++)
         {
             //Check: Room is Ladder AND going correct direction
@@ -219,54 +221,5 @@ public class enemyPathfinding : MonoBehaviour
         }
         // Return LadderRoom Position
         return House[floor][ladderRoom][1];
-    }
-    /// <summary>
-    /// Returns List of Rooms
-    /// TESTING: Currently generates Room itself (Will grab room data from elsewhere in future)
-    /// </summary>
-    /// <returns>List of Floors->Rooms->Variables</returns>
-    List<List<List<Vector2>>> getRooms()
-    {
-        //Initialize internal variable
-        List<List<List<Vector2>>> Rooms = new List<List<List<Vector2>>>();
-        //TESTING: House Generation
-        //For each Floor: 3
-        for (int i = 0; i < 3; i++)
-        {
-            //Add Floor
-            Rooms.Add(new List<List<Vector2>>());
-            //For each Room: 3
-            for (int j = 0; j < 3; j++)
-            {
-                //Add Room
-                Rooms[i].Add(new List<Vector2>());
-                //For Each Variable
-                for (int k = 0; k < 2; k++)
-                {
-                    //SETS first variable to (0,0) IE: Not a ladder.   Sets Position in incremtes of 2fx and 4fy
-                    Rooms[i][j].Add(new Vector2(k * ((j * 10f)-10f), k * (i * 5f)-2f));
-                    //Debug.Log(Rooms[i][j][k]); //TESTING: Print each Room
-                }
-                //Debug.Log("Room Done"); //TESTING: Room Done Creation
-            }
-            //Debug.Log("Floor Done"); //TESTING: Floor Done Creation
-        }
-        //Debug.Log("Rooms Done"); //TESTING: Rooms Done Creation
-
-        //TESTING: Manually Set certain Rooms as Ladders.
-        //Room 0 of Floor 0 and 1
-        Rooms[0][0][0] = new Vector2(1f, 1f); //UP
-        Rooms[1][0][0] = new Vector2(1f, 2f); //UP/Down
-        Rooms[2][0][0] = new Vector2(1f, 0f); //Down
-
-        Rooms[1][1][0] = new Vector2(1f, 1f); //UP
-        Rooms[2][1][0] = new Vector2(1f, 0f); //UP/Down
-
-        Rooms[0][2][0] = new Vector2(1f, 1f); //UP
-        Rooms[1][2][0] = new Vector2(1f, 2f); //UP/Down
-        Rooms[2][2][0] = new Vector2(1f, 0f); //Down
-
-        //Return Finished Rooms
-        return Rooms;
     }
 }
