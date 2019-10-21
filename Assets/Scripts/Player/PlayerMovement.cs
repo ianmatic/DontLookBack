@@ -114,10 +114,13 @@ public class PlayerMovement : MonoBehaviour
             if (ladder.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
             {
                 gameObject.GetComponent<Rigidbody>().useGravity = false;
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
+
                 return true; // touching some ladder
             }
         }
         gameObject.GetComponent<Rigidbody>().useGravity = true;
+        gameObject.GetComponent<Rigidbody>().isKinematic = false;
         return false; // not touching any ladder
     }
 
