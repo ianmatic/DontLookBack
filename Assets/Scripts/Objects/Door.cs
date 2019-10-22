@@ -24,11 +24,7 @@ public class Door : MonoBehaviour
         {
             if(Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
             {
-                if(needKey)
-                {
-                    
-                }
-                else // Changes the state of the box collider and whether the door is open
+                if(!needKey)
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
                 }
@@ -39,5 +35,10 @@ public class Door : MonoBehaviour
     bool NearDoor() // Checks if a player is near the door
     {
         return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
+    }
+
+    public void OpenLock() //Uses a key on the door
+    {
+        needKey = false;
     }
 }

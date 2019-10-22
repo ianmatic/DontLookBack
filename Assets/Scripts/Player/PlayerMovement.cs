@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
         EnemyCollision();
         LadderCollision();
         StairCollision();
-        DoorCollision();
+        KeyCollision();
         RoomCollision();
     }
 
@@ -128,9 +128,15 @@ public class PlayerMovement : MonoBehaviour
         return false; // not touching any ladder
     }
 
-    void DoorCollision()
+    void KeyCollision()
     {
-
+        foreach (GameObject key in roomManager.KeyList)
+        {
+            if(key.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+            {
+                key.GetComponent<Key>().GrabKey();
+            }
+        }
     }
 
     //Checks for each room and looks at wall collisions

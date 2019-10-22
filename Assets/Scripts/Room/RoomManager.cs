@@ -9,6 +9,8 @@ public class RoomManager : MonoBehaviour
     private List<GameObject> enemyRoomList;
     private List<GameObject> ladderList;
     private List<GameObject> stairList;
+    private List<GameObject> keyList;
+    private List<GameObject> doorList;
     private GameObject currentPlayerRoom;
     private GameObject oldPlayerRoom;
     private GameObject player;
@@ -28,6 +30,8 @@ public class RoomManager : MonoBehaviour
         stairList = new List<GameObject>();
         stairList.AddRange(GameObject.FindGameObjectsWithTag("RightStair"));
         stairList.AddRange(GameObject.FindGameObjectsWithTag("LeftStair"));
+        keyList = new List<GameObject>();
+        keyList.AddRange(GameObject.FindGameObjectsWithTag("Key"));
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
@@ -188,5 +192,20 @@ public class RoomManager : MonoBehaviour
     {
         get { return currentStair; }
         set { currentStair = value; }
+    }
+
+    public List<GameObject> KeyList
+    {
+        get {
+            for(int i = 0; i < keyList.Count; i++)
+            {
+                if(i < keyList.Count && keyList[i] == null)
+                {
+                    keyList.RemoveAt(i);
+                    i--;
+                }
+            }
+            return keyList;
+        }
     }
 }
