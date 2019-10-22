@@ -199,7 +199,7 @@ public class RoomManager : MonoBehaviour
         get {
             for(int i = 0; i < keyList.Count; i++)
             {
-                if(i < keyList.Count && keyList[i] == null)
+                if(i < keyList.Count && keyList[i].GetComponent<Key>() == null)
                 {
                     keyList.RemoveAt(i);
                     i--;
