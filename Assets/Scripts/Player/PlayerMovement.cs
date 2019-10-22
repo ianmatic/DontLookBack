@@ -9,6 +9,15 @@ enum SpecialPlayerState
     Stairs,
 }
 
+enum PlayerMoveControl
+{
+    Left,
+    Right,
+    Up,
+    Down,
+    None
+}
+
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -212,56 +221,57 @@ public class PlayerMovement : MonoBehaviour
         switch (specialPlayerState)
         {
             case SpecialPlayerState.None:
-                if (Input.GetKey(KeyCode.LeftArrow))
+                switch(ControlMovement())
                 {
-                    movement = new Vector3(-1.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.RightArrow))
-                {
-                    movement = new Vector3(1.0f, 0.0f);
-                }
-                else
-                {
-                    movement = new Vector3(0.0f, 0.0f);
+                    case PlayerMoveControl.Left:
+                        movement = new Vector3(-1.0f, 0.0f);
+                        break;
+                    case PlayerMoveControl.Right:
+                        movement = new Vector3(1.0f, 0.0f);
+                        break;
+                    default:
+                        movement = new Vector3(0.0f, 0.0f);
+                        break;
                 }
                 break;
             case SpecialPlayerState.OnLadder:
-                if (Input.GetKey(KeyCode.LeftArrow))
+                switch (ControlMovement())
                 {
-                    movement = new Vector3(-1.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.RightArrow))
-                {
-                    movement = new Vector3(1.0f, 0.0f);
-                }
-                else if (Input.GetKey(KeyCode.UpArrow))
-                {
-                    movement = new Vector3(0.0f, 1.0f);
-                } 
-                else if (Input.GetKey(KeyCode.DownArrow))
-                {
-                    movement = new Vector3(0.0f, -1.0f);
-                }
-                else 
-                {
-                    movement = new Vector3(0.0f, 0.0f);
+                    case PlayerMoveControl.Left:
+                        movement = new Vector3(-1.0f, 0.0f);
+                        break;
+                    case PlayerMoveControl.Right:
+                        movement = new Vector3(1.0f, 0.0f);
+                        break;
+                    case PlayerMoveControl.Up:
+                        movement = new Vector3(0.0f, 1.0f);
+                        break;
+                    case PlayerMoveControl.Down:
+                        movement = new Vector3(0.0f, -1.0f);
+                        break;
+                    default:
+                        movement = new Vector3(0.0f, 0.0f);
+                        break;
                 }
                 break;
             case SpecialPlayerState.Stairs:
                 StairProperties stair = roomManager.CurrentStair.GetComponent<StairProperties>();
                 Vector3 stairDir = stair.topStair.transform.position - stair.bottomStair.transform.position;
 
-                if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow)) // move down
+                switch (ControlMovement())
                 {
-                    // set the z value
-                    transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                    movement = -stairDir.normalized / 1.5f;
-                }
-                else if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.RightArrow)) // move up
-                {
-                    // set the z value
-                    transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                    movement = stairDir.normalized / 1.5f;
+                    case PlayerMoveControl.Left:
+                    case PlayerMoveControl.Down:
+                        // set the z value
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                        movement = -stairDir.normalized / 1.5f;
+                        break;
+                    case PlayerMoveControl.Right:
+                    case PlayerMoveControl.Up:
+                        // set the z value
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                        movement = stairDir.normalized / 1.5f;
+                        break;
                 }
                 break;
 
@@ -276,7 +286,32 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!willCollide) // safe to move to new pos
         {
-            transform.position = futurePos; // Changed this so collisions could work. - TJ
+            transform.position = futurePos;
+        }
+    }
+
+    //Write all movement control options in here
+    PlayerMoveControl ControlMovement()
+    {
+        if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) //move left
+        {
+            return PlayerMoveControl.Left;
+        }
+        else if(Input.GetKey(KeyCode.RightArrow)|| Input.GetKey(KeyCode.D)) //move right
+        {
+            return PlayerMoveControl.Right;
+        }
+        else if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) //move up
+        {
+            return PlayerMoveControl.Up;
+        }
+        else if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) //move down
+        {
+            return PlayerMoveControl.Down;
+        }
+        else //no movement controls being input
+        {
+            return PlayerMoveControl.None;
         }
     }
 }
