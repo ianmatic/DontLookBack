@@ -139,17 +139,26 @@ public class RoomManager : MonoBehaviour
         //Debug.Log("Rooms Done"); //TESTING: Rooms Done Creation
 
         //TESTING: Manually Set certain Rooms as Ladders.
-        //Room 0 of Floor 0 and 1
-        Rooms[0][0][0] = new Vector2(1f, 1f); //UP
-        Rooms[1][0][0] = new Vector2(1f, 2f); //UP/Down
-        Rooms[2][0][0] = new Vector2(1f, 0f); //Down
+        //For Stairs, add extra Vector 2s to store position of Stairs going: [2]Down, [3]UP
+        //Column 0
+        //Floor 0
+        Rooms[0][0][0] = new Vector2(1f, 1f); //Ladder UP
+        //Floor 1
+        Rooms[1][0][0] = new Vector2(3f, 0f); //Ladder Down Stairs Up
+        Rooms[1][0].Add(new Vector2(0, 0));
+        Rooms[1][0].Add(new Vector2(-7f, Rooms[1][0][1].y)); //Stairs position
+        //Floor 2
+        Rooms[2][0][0] = new Vector2(2f, 0f); //Stairs Down
+        Rooms[2][0].Add(new Vector2(-13f, Rooms[2][0][1].y)); //Stairs position
+        //Column 1
+        //Floor 0
+        Rooms[0][1][0] = new Vector2(2f, 1f); //Stairs UP
+        Rooms[0][1].Add(new Vector2(0f, 0f));
+        Rooms[0][1].Add(new Vector2(-7f, Rooms[0][1][1].y)); //Stairs position
+        //Floor 1
+        Rooms[1][1][0] = new Vector2(2f, 0f); //Stairs Down
+        Rooms[1][1].Add(new Vector2(-13f, Rooms[1][1][1].y)); //Stairs position
 
-        Rooms[1][1][0] = new Vector2(1f, 1f); //UP
-        Rooms[2][1][0] = new Vector2(1f, 0f); //UP/Down
-
-        Rooms[0][2][0] = new Vector2(1f, 1f); //UP
-        Rooms[1][2][0] = new Vector2(1f, 2f); //UP/Down
-        Rooms[2][2][0] = new Vector2(1f, 0f); //Down
 
         //Return Finished Rooms
         return Rooms;
