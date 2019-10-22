@@ -32,6 +32,8 @@ public class RoomManager : MonoBehaviour
         stairList.AddRange(GameObject.FindGameObjectsWithTag("LeftStair"));
         keyList = new List<GameObject>();
         keyList.AddRange(GameObject.FindGameObjectsWithTag("Key"));
+        doorList = new List<GameObject>();
+        doorList.AddRange(GameObject.FindGameObjectsWithTag("Door"));
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
@@ -192,6 +194,11 @@ public class RoomManager : MonoBehaviour
     {
         get { return currentStair; }
         set { currentStair = value; }
+    }
+
+    public List<GameObject> DoorList
+    {
+        get { return doorList; }
     }
 
     public List<GameObject> KeyList

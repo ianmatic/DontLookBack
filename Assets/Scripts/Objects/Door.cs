@@ -27,6 +27,7 @@ public class Door : MonoBehaviour
                 if(!needKey)
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                    doorOpen = !doorOpen;
                 }
             }
         }
@@ -40,5 +41,10 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
+    }
+
+    public bool DoorOpen
+    {
+        get { return doorOpen; }
     }
 }
