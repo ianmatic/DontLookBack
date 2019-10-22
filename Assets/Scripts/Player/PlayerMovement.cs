@@ -228,7 +228,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GetComponent<Renderer>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Renderer>().bounds))
         {
-            //KillPlayer();
+           KillPlayer();
         }
     }
 
