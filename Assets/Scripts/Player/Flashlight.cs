@@ -25,12 +25,11 @@ public class Flashlight : MonoBehaviour
             Plane zPlane = new Plane(Vector3.back, transform.position); // make a plane that is along the z axis at the player's position (parallel to our back walls)
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             float hitDistance;
-            if (zPlane.Raycast(mouseRay, out hitDistance)) // shoot a ray from mouse position to the plane, and retrieve the length of the ray
-            {
-                Vector3 hitPoint = mouseRay.GetPoint(hitDistance); // get the exact point at which the ray hit the plane
-                /*Debug.DrawRay(mouseRay.origin, mouseRay.direction * Vector3.Distance(mouseRay.origin, hitPoint), Color.red, 50);*/
-                transform.rotation = Quaternion.LookRotation((hitPoint - player.transform.position).normalized); // look at the exact point from the player's position
-            }
+            zPlane.Raycast(mouseRay, out hitDistance); // shoot a ray from mouse position to the plane, and retrieve the length of the ray
+
+            Vector3 hitPoint = mouseRay.GetPoint(hitDistance); // get the exact point at which the ray hit the plane
+            transform.rotation = Quaternion.LookRotation((hitPoint - player.transform.position).normalized); // look at the exact point from the player's position
+            /*Debug.DrawRay(mouseRay.origin, mouseRay.direction * Vector3.Distance(mouseRay.origin, hitPoint), Color.red, 50);*/
         }
     }
 }
