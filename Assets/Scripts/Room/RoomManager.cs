@@ -17,7 +17,7 @@ public class RoomManager : MonoBehaviour
     private GameObject currentStair;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         roomList = new List<GameObject>();
         roomList.AddRange(GameObject.FindGameObjectsWithTag("Room"));
