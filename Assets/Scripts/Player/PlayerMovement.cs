@@ -115,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Bounds topStair = roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
             Bounds bottomStair = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
+
             bool aboveTopStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y > topStair.center.y + topStair.extents.y; // bottom of player is above top stair
             bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.1f < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
             if (specialPlayerState == SpecialPlayerState.Stairs && // on stairs and above or below stairs
@@ -134,10 +135,11 @@ public class PlayerMovement : MonoBehaviour
         {
             Bounds topStair = stair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
             Bounds bottomStair = stair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
+
             if ((GetComponent<Collider>().bounds.Intersects(bottomStair) || GetComponent<Collider>().bounds.Intersects(topStair)) // touching the stairs while not already on them
                 && specialPlayerState != SpecialPlayerState.Stairs)
             {
-                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.UpArrow)) // need to press appropriate key to start climbing stairs
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) // need to press appropriate key to start climbing stairs
                 {
                     specialPlayerState = SpecialPlayerState.Stairs;
                     roomManager.CurrentStair = stair;
@@ -285,13 +287,14 @@ public class PlayerMovement : MonoBehaviour
 
                 switch (ControlMovement())
                 {
-                    case PlayerMoveControl.Left:
+
+                    case PlayerMoveControl.Right:
                     case PlayerMoveControl.Down:
                         // set the z value
                         transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
                         movement = -stairDir.normalized / 1.5f;
                         break;
-                    case PlayerMoveControl.Right:
+                    case PlayerMoveControl.Left:
                     case PlayerMoveControl.Up:
                         // set the z value
                         transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
