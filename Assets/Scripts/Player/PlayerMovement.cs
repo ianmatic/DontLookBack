@@ -242,7 +242,10 @@ public class PlayerMovement : MonoBehaviour
         gameObject.SetActive(false);
         SceneLoader.LoadScene("endingScene");
     }
-
+    void PlayerWins()
+    {
+        SceneLoader.LoadScene("victoryScene");
+    }
     void ChangeMovement()
     {
         switch (specialPlayerState)
