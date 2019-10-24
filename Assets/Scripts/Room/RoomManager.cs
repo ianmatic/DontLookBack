@@ -9,13 +9,15 @@ public class RoomManager : MonoBehaviour
     private List<GameObject> enemyRoomList;
     private List<GameObject> ladderList;
     private List<GameObject> stairList;
+    private List<GameObject> keyList;
+    private List<GameObject> doorList;
     private GameObject currentPlayerRoom;
     private GameObject oldPlayerRoom;
     private GameObject player;
     private GameObject currentStair;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         roomList = new List<GameObject>();
         roomList.AddRange(GameObject.FindGameObjectsWithTag("Room"));
@@ -28,6 +30,10 @@ public class RoomManager : MonoBehaviour
         stairList = new List<GameObject>();
         stairList.AddRange(GameObject.FindGameObjectsWithTag("RightStair"));
         stairList.AddRange(GameObject.FindGameObjectsWithTag("LeftStair"));
+        keyList = new List<GameObject>();
+        keyList.AddRange(GameObject.FindGameObjectsWithTag("Key"));
+        doorList = new List<GameObject>();
+        doorList.AddRange(GameObject.FindGameObjectsWithTag("Door"));
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
@@ -79,7 +85,7 @@ public class RoomManager : MonoBehaviour
 
 
         // turn on light and camera in new room
-        foreach (Transform child in room.transform)
+        foreach (Transform child in room.transform) 
         {
             if (child.tag == "MainCamera" || child.name == "Spot Light")
             {
@@ -197,5 +203,25 @@ public class RoomManager : MonoBehaviour
     {
         get { return currentStair; }
         set { currentStair = value; }
+    }
+
+    public List<GameObject> DoorList
+    {
+        get { return doorList; }
+    }
+
+    public List<GameObject> KeyList
+    {
+        get {
+            for(int i = 0; i < keyList.Count; i++)
+            {
+                if(i < keyList.Count && keyList[i].GetComponent<Key>() == null)
+                {
+                    keyList.RemoveAt(i);
+                    i--;
+                }
+            }
+            return keyList;
+        }
     }
 }

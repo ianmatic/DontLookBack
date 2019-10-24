@@ -9,6 +9,10 @@ public class Door : MonoBehaviour
 
     bool doorOpen;
     public bool needKey;
+    public bool exitDoor;
+
+    public Material lockedTexture;
+    public Material unlockedTexture;
 
     void Start()
     {
@@ -16,6 +20,7 @@ public class Door : MonoBehaviour
         animator = gameObject.GetComponent<Animator>();
 
         doorOpen = false;
+        if(needKey) { ApplyDoorTexture(lockedTexture); }
     }
 
     void Update()
@@ -24,13 +29,15 @@ public class Door : MonoBehaviour
         {
             if(Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
             {
-                if(needKey)
-                {
-                    
-                }
-                else // Changes the state of the box collider and whether the door is open
+                if(!needKey)
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                    doorOpen = !doorOpen;
+
+                    if (exitDoor)
+                    {
+                        SceneLoader.LoadScene("victoryScene");
+                    }
                 }
             }
         }
@@ -39,5 +46,21 @@ public class Door : MonoBehaviour
     bool NearDoor() // Checks if a player is near the door
     {
         return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
+    }
+
+    public void OpenLock() //Uses a key on the door
+    {
+        needKey = false;
+        ApplyDoorTexture(unlockedTexture);
+    }
+
+    void ApplyDoorTexture(Material m)
+    {
+        transform.GetChild(0).GetComponent<Renderer>().material = m;
+    }
+
+    public bool DoorOpen
+    {
+        get { return doorOpen; }
     }
 }

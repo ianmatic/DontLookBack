@@ -10,6 +10,8 @@ TagManager:
   - LevelManager
   - LeftStair
   - RightStair
+  - Key
+  - Door
   layers:
   - Default
   - TransparentFX
