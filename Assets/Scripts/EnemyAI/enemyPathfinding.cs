@@ -61,11 +61,11 @@ public class enemyPathfinding : MonoBehaviour
         //Grabs the player's Position
         playerPosition = player.transform.position;
 
-        if(player.transform.position.y < -1)
+        if(player.transform.position.y < 2.5)
         {
             playerFloor = 0;
         }
-        else if(player.transform.position.y > 4)
+        else if(player.transform.position.y > 7.5)
         {
             playerFloor = 2;
         }
@@ -195,17 +195,18 @@ public class enemyPathfinding : MonoBehaviour
         //Get player floor (Will get information less directly in future)
         //playerFloor = playerRealFloor;
         //Floor Check
-        if(enemyFloor == playerFloor)
+        if( Mathf.Abs(enemyPosition.y - playerPosition.y) < 0.1f)
         {
             //Set Destination
             enemyDestination = playerPosition;
             //Set Target as Player
             enemyTarget = 0;
+            
         }
         else
         {
             //Determine which Ladder (Up or Down) to go to / Set Destination
-            if(playerFloor > enemyFloor)
+            if(playerPosition.y > enemyPosition.y)
             {
                 enemyDestination = findLadder(enemyFloor, 1);
                 if (enemyPosition.x == enemyDestination.x )
@@ -249,10 +250,19 @@ public class enemyPathfinding : MonoBehaviour
                 //Check: If NOT first ladderRoom found
                 if (ladderRoom != -1)
                 {
-                    //Check: If distance to Ladder is less than previous ladderRoom
-                    if (Mathf.Abs(House[floor][i][1].x - enemyPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - enemyPosition.x))
-                    {
-                        ladderRoom = i;
+                    if( Mathf.Abs(enemyFloor - playerFloor) < 2){
+                        //Check: If distance to Ladder is less than previous ladderRoom (Based on Player  X then Y)
+                        if (Mathf.Abs(House[floor][i][1].x - playerPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - playerPosition.x))
+                        {
+                            ladderRoom = i;
+                        }
+                    }
+                    else {
+                        //Check: If distance to Ladder is less than previous ladderRoom (Based on Enemy Y then X)
+                        if (Mathf.Abs(House[floor][i][1].x - enemyPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - enemyPosition.x))
+                        {
+                            ladderRoom = i;
+                        }
                     }
                                       
                 }
