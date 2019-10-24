@@ -9,6 +9,7 @@ public class Door : MonoBehaviour
 
     bool doorOpen;
     public bool needKey;
+    public bool exitDoor;
 
     public Material lockedTexture;
     public Material unlockedTexture;
@@ -32,6 +33,11 @@ public class Door : MonoBehaviour
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
                     doorOpen = !doorOpen;
+
+                    if (exitDoor)
+                    {
+                        SceneLoader.LoadScene("victoryScene");
+                    }
                 }
             }
         }

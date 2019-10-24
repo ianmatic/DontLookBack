@@ -129,7 +129,7 @@ Light:
   serializedVersion: 9
   m_Type: 0
   m_Color: {r: 0.7924528, g: 0.78123885, b: 0.78123885, a: 1}
-  m_Intensity: 55.704227
+  m_Intensity: 23.873241
   m_Range: 10
   m_SpotAngle: 150.5
   m_InnerSpotAngle: 1
@@ -217,7 +217,7 @@ MonoBehaviour:
   useVolumetric: 1
   featuresFoldout: 1
   showAdditionalSettings: 0
-  displayLightIntensity: 700
+  displayLightIntensity: 300
   displayAreaLightEmissiveMesh: 0
   areaLightCookie: {fileID: 0}
   areaLightShadowCone: 120
@@ -305,7 +305,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2533892348656719781}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.5600867, y: 6.910971, z: 6.3745146}
+  m_LocalPosition: {x: -7.601087, y: 6.910972, z: 6.374515}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children:
   - {fileID: 389795162193088348}

@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: Scene Settings Profile
+  m_Name: Profile without Fog
   m_EditorClassIdentifier: 
   components:
   - {fileID: -3447690525373519583}
@@ -167,7 +167,7 @@ MonoBehaviour:
     max: 1
   maxFogDistance:
     m_OverrideState: 0
-    m_Value: 5000
+    m_Value: 0
     min: 0
   mipFogMaxMip:
     m_OverrideState: 0
@@ -183,14 +183,14 @@ MonoBehaviour:
     m_Value: 1000
     min: 0
   albedo:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: {r: 0.11551519, g: 0.11133855, b: 0.16981131, a: 1}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   meanFreePath:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 5
     min: 1
   baseHeight:
     m_OverrideState: 0
@@ -232,5 +232,5 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0
   fogType:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 3
