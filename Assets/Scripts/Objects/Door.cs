@@ -31,6 +31,7 @@ public class Door : MonoBehaviour
                 if(!needKey)
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                    doorOpen = !doorOpen;
                 }
             }
         }
@@ -50,5 +51,10 @@ public class Door : MonoBehaviour
     void ApplyDoorTexture(Material m)
     {
         transform.GetChild(0).GetComponent<Renderer>().material = m;
+    }
+
+    public bool DoorOpen
+    {
+        get { return doorOpen; }
     }
 }

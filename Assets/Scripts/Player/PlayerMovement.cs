@@ -26,7 +26,6 @@ public class PlayerMovement : MonoBehaviour
     private SpecialPlayerState specialPlayerState = SpecialPlayerState.None;
     private RoomManager roomManager;
     private Vector3 futurePos;
-    private bool willCollide = false;
 
     // Start is called before the first frame update
     void Start()
@@ -43,7 +42,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        willCollide = false;
         ChangeMovement();
         CheckCollisions();
         MovePlayer();
@@ -53,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     {
         EnemyCollision();
         LadderCollision();
+        DoorCollision();
         StairCollision();
         KeyCollision();
         RoomCollision();
@@ -77,6 +76,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void DoorCollision()
+    {
+        Bounds futureBounds = new Bounds(futurePos, gameObject.GetComponent<Renderer>().bounds.size);
+        foreach (GameObject door in roomManager.DoorList)
+        {
+            foreach (Transform child in door.transform) // get the physical door (door itself has no renderer)
+            {
+                if (child.name == "DoorWall")
+                {
+                    if (child.GetComponent<BoxCollider>().bounds.Intersects(futureBounds) && !door.GetComponent<Door>().DoorOpen) // touching a closed door
+                    {
+                        if (child.GetComponent<Renderer>().bounds.center.x < futureBounds.center.x) // door is left of player
+                        {
+                            // place player on right side
+                            movement.x = 0;
+                            futurePos = new Vector3(door.transform.position.x + child.GetComponent<Renderer>().bounds.size.x / 2 + (transform.localScale.x / 2) + 0.01f, futurePos.y);
+                        }
+                        else if (child.GetComponent<Renderer>().bounds.center.x > futureBounds.center.x) // door is right of player
+                        {
+                            // place player on left side
+                            movement.x = 0;
+                            futurePos = new Vector3(door.transform.position.x - child.GetComponent<Renderer>().bounds.size.x / 2 - (transform.localScale.x / 2) + 0.01f, futurePos.y);
+                        }
+                    }
+                }
+            }    
+        }
+    }
+
     /// <summary>
     /// Puts the player in stair mode, and takes them out of stair mode based on positioning and input
     /// </summary>
@@ -87,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Bounds topStair = roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
             Bounds bottomStair = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
+
             bool aboveTopStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y > topStair.center.y + topStair.extents.y; // bottom of player is above top stair
             bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.1f < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
             if (specialPlayerState == SpecialPlayerState.Stairs && // on stairs and above or below stairs
@@ -106,10 +135,11 @@ public class PlayerMovement : MonoBehaviour
         {
             Bounds topStair = stair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
             Bounds bottomStair = stair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
+
             if ((GetComponent<Collider>().bounds.Intersects(bottomStair) || GetComponent<Collider>().bounds.Intersects(topStair)) // touching the stairs while not already on them
                 && specialPlayerState != SpecialPlayerState.Stairs)
             {
-                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.UpArrow)) // need to press appropriate key to start climbing stairs
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) // need to press appropriate key to start climbing stairs
                 {
                     specialPlayerState = SpecialPlayerState.Stairs;
                     roomManager.CurrentStair = stair;
@@ -173,14 +203,12 @@ public class PlayerMovement : MonoBehaviour
             if (wall.gameObject.name == "LeftWall")
             {
                 movement.x = 0;
-                transform.position = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.size.x / 2 + (transform.localScale.x / 2) + 0.01f, transform.position.y);
-                willCollide = true;
+                futurePos = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.size.x / 2 + (transform.localScale.x / 2) + 0.01f, futurePos.y);
             }
             if (wall.gameObject.name == "RightWall")
             {
                 movement.x = 0;
-                transform.position = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.size.x / 2 - (transform.localScale.x / 2) + 0.01f, transform.position.y);
-                willCollide = true;
+                futurePos = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.size.x / 2 - (transform.localScale.x / 2) + 0.01f, futurePos.y);
             }
             if (wall.gameObject.name == "BottomWall")
             {
@@ -189,8 +217,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     movement.y = 0;
                     // super small number added to y to prevent stuck in collisions, but so small that gravity induced jitter can't be seen
-                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.000001f);
-                    willCollide = true;
+                    futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.000001f);
                 }
             }
         }
@@ -203,7 +230,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GetComponent<Renderer>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Renderer>().bounds))
         {
-            KillPlayer();
+           KillPlayer();
         }
     }
 
@@ -215,7 +242,10 @@ public class PlayerMovement : MonoBehaviour
         gameObject.SetActive(false);
         SceneLoader.LoadScene("endingScene");
     }
-
+    void PlayerWins()
+    {
+        SceneLoader.LoadScene("victoryScene");
+    }
     void ChangeMovement()
     {
         switch (specialPlayerState)
@@ -260,13 +290,14 @@ public class PlayerMovement : MonoBehaviour
 
                 switch (ControlMovement())
                 {
-                    case PlayerMoveControl.Left:
+
+                    case PlayerMoveControl.Right:
                     case PlayerMoveControl.Down:
                         // set the z value
                         transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
                         movement = -stairDir.normalized / 1.5f;
                         break;
-                    case PlayerMoveControl.Right:
+                    case PlayerMoveControl.Left:
                     case PlayerMoveControl.Up:
                         // set the z value
                         transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
@@ -276,18 +307,13 @@ public class PlayerMovement : MonoBehaviour
                 break;
 
         }
-
         movement *= speed * Time.deltaTime;
-
         futurePos = transform.position + movement; // where the player wants to go
     }
 
     void MovePlayer()
     {
-        if (!willCollide) // safe to move to new pos
-        {
             transform.position = futurePos;
-        }
     }
 
     //Write all movement control options in here
