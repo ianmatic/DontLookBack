@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4091053440138155207}
   - component: {fileID: 4091053440138155204}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: DoorWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 4091053440419941510}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
