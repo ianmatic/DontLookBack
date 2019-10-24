@@ -100,11 +100,11 @@ public class enemyPathfinding : MonoBehaviour
         {
             //If Player: Move to Player at base speed untill within set buffer (Buffer code will be replaced by coliders most likely)
             case 0:
-                if (enemyPosition.x < enemyDestination.x - 0.03f || enemyPosition.x > enemyDestination.x + 0.03f)
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
                 {
                     enemyPosition.x += direction.x * enemySpeed;
                     //ONCE within buffer, Set x to exact x of Player  
-                    if (enemyPosition.x > enemyDestination.x - 0.03f && enemyPosition.x < enemyDestination.x + 0.03f)
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
                     {
                         enemyPosition.x = enemyDestination.x;
                     }
@@ -113,10 +113,10 @@ public class enemyPathfinding : MonoBehaviour
             case 1:
                 //If Ladder:
                 //If X is different then move horizontally to Ladder
-                if (enemyPosition.x < enemyDestination.x - 0.03f || enemyPosition.x > enemyDestination.x + 0.03f)
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
                 {
                     enemyPosition += direction * enemySpeed;
-                    if (enemyPosition.x > enemyDestination.x - 0.03f && enemyPosition.x < enemyDestination.x + 0.03f)
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
                     {
                         enemyPosition.x = enemyDestination.x;
                     }
@@ -125,7 +125,7 @@ public class enemyPathfinding : MonoBehaviour
                 else
                 {
                     //If Y is different, climb.  Else: set Y exactly to Destination and adjust enemyFloor to new Floor
-                    if (enemyPosition.y < enemyDestination.y - 0.03f || enemyPosition.y > enemyDestination.y + 0.03f)
+                    if (Mathf.Abs(enemyPosition.y - enemyDestination.y) > 0.03f)
                     {
                         enemyPosition += direction * (enemySpeed * 0.5f);
 
@@ -139,12 +139,12 @@ public class enemyPathfinding : MonoBehaviour
                 break;
             case 2:
                 //If Stairs:
-                if (enemyPosition.x < enemyDestination.x - 0.03f || enemyPosition.x > enemyDestination.x + 0.03f)
+                if ( Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
                 {
                     if(enemyPosition.y != enemyDestination.y){enemyZPosition = 1;}
                     enemyPosition += direction * enemySpeed;
 
-                    if (enemyPosition.x > enemyDestination.x - 0.03f && enemyPosition.x < enemyDestination.x + 0.03f)
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
                     {
                         enemyPosition.x = enemyDestination.x;
                     }
@@ -166,7 +166,7 @@ public class enemyPathfinding : MonoBehaviour
                     //Reset Direction going upwards
                     //direction = (enemyDestination - enemyPosition).normalized;
                     //If Y is different, climb.  Else: set Y exactly to Destination and adjust enemyFloor to new Floor
-                    if (enemyPosition.y < enemyDestination.y - 0.03f || enemyPosition.y > enemyDestination.y + 0.03f)
+                    if (Mathf.Abs(enemyPosition.y - enemyDestination.y) > 0.03f)
                     {
                         enemyPosition += direction * (enemySpeed * 0.5f);
                     }
