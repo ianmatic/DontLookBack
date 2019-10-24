@@ -5,6 +5,7 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     GameObject player;
+    GameObject enemy;
     Animator animator;
 
     bool doorOpen;
@@ -17,6 +18,7 @@ public class Door : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        enemy = GameObject.FindGameObjectWithTag("Enemy");
         animator = gameObject.GetComponent<Animator>();
 
         doorOpen = false;
@@ -41,11 +43,21 @@ public class Door : MonoBehaviour
                 }
             }
         }
+
+        if(EnemyNearDoor())
+        {
+            animator.SetBool("doorOpen", true);
+        }
     }
 
     bool NearDoor() // Checks if a player is near the door
     {
         return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
+    }
+
+    bool EnemyNearDoor()
+    {
+        return (gameObject.transform.position - enemy.transform.position).magnitude < 2.5f;
     }
 
     public void OpenLock() //Uses a key on the door
