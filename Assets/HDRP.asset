@@ -17,7 +17,7 @@ MonoBehaviour:
   m_RenderPipelineRayTracingResources: {fileID: 0}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 69456063627037
+      data1: 69455489007389
       data2: 4539628424389459968
     lodBias: 1
     lodBiasMode: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
     dynamicResolutionSettings:
       enabled: 0
       maxPercentage: 100
-      minPercentage: 100
+      minPercentage: 10
       dynResType: 1
       upsampleFilter: 1
       forceResolution: 0
