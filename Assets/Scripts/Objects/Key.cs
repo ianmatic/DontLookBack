@@ -31,8 +31,10 @@ public class Key : MonoBehaviour
             GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
             Vector3 cameraPos = camera.transform.position;
             int numOfKeys = camera.transform.childCount;
-            transform.position = new Vector3((cameraPos.x - 4.0f) + (transform.localScale.x * numOfKeys), cameraPos.y + 1.0f, -4.0f);
+            transform.position = new Vector3((cameraPos.x - 4.0f) + (transform.localScale.x * numOfKeys), cameraPos.y + 1.0f, cameraPos.z + 4.0f);
             transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            Vector3 direction = (cameraPos - transform.position).normalized;
+            transform.rotation = Quaternion.LookRotation(direction);
             transform.parent = camera.transform;
             Destroy(this);
         }
