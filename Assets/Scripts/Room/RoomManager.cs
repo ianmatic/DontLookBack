@@ -154,10 +154,10 @@ public class RoomManager : MonoBehaviour
         //Floor 0
         Rooms[0][1][0] = new Vector2(2f, 1f); //Stairs UP
         Rooms[0][1].Add(new Vector2(0f, 0f));
-        Rooms[0][1].Add(new Vector2(-7f, Rooms[0][1][1].y)); //Stairs position
+        Rooms[0][1].Add(new Vector2(-2.5f, Rooms[0][1][1].y)); //Stairs position
         //Floor 1
         Rooms[1][1][0] = new Vector2(2f, 0f); //Stairs Down
-        Rooms[1][1].Add(new Vector2(-13f, Rooms[1][1][1].y)); //Stairs position
+        Rooms[1][1].Add(new Vector2(3.6f, Rooms[1][1][1].y)); //Stairs position
 
 
         //Return Finished Rooms
