@@ -10,12 +10,16 @@ public class Door : MonoBehaviour
     bool doorOpen;
     public bool needKey;
 
+    public Material lockedTexture;
+    public Material unlockedTexture;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         animator = gameObject.GetComponent<Animator>();
 
         doorOpen = false;
+        if(needKey) { ApplyDoorTexture(lockedTexture); }
     }
 
     void Update()
@@ -40,5 +44,11 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
+        ApplyDoorTexture(unlockedTexture);
+    }
+
+    void ApplyDoorTexture(Material m)
+    {
+        transform.GetChild(0).GetComponent<Renderer>().material = m;
     }
 }
