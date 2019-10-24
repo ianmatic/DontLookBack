@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RoomManager : MonoBehaviour
 {
+
     private List<GameObject> roomList;
     private List<GameObject> enemyList;
     private List<GameObject> enemyRoomList;
