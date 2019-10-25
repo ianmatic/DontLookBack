@@ -16,6 +16,7 @@ public class RoomManager : MonoBehaviour
     private GameObject oldPlayerRoom;
     private GameObject player;
     private GameObject currentStair;
+    private GameObject currentLadder;
 
     // Start is called before the first frame update
     void Awake()
@@ -195,6 +196,11 @@ public class RoomManager : MonoBehaviour
     public List<GameObject> LadderList
     {
         get { return ladderList; }
+    }
+    public GameObject CurrentLadder
+    {
+        get { return currentLadder; }
+        set { currentLadder = value; }    
     }
     public List<GameObject> StairList
     {

@@ -59,20 +59,43 @@ public class PlayerMovement : MonoBehaviour
 
     void LadderCollision()
     {
-        switch (specialPlayerState) // Switches between whether the player is on the ladder or off the ladder. 
+        // end ladder collision
+        if (roomManager.CurrentLadder) // has used ladder
         {
-            case SpecialPlayerState.None: // Off ladder
-                if (PlayerOnLadder()) // touching ladder
+            Bounds topLadder = roomManager.CurrentLadder.GetComponent<LadderProperties>().topLadder.GetComponent<Collider>().bounds;
+            Bounds bottomLadder = roomManager.CurrentLadder.GetComponent<LadderProperties>().bottomLadder.GetComponent<Collider>().bounds;
+
+            bool aboveTopLadder = futurePos.y - GetComponent<Renderer>().bounds.extents.y > topLadder.center.y + topLadder.extents.y; // bottom of player is above top ladder
+            bool belowBottomLadder = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.1f < bottomLadder.center.y - bottomLadder.extents.y;  //bottom of player is below bottom ladder
+            if (specialPlayerState == SpecialPlayerState.OnLadder && // on stairs and above or below ladder
+                (aboveTopLadder || belowBottomLadder))
+            {
+                // reset z value
+                futurePos.z = 0;
+                specialPlayerState = SpecialPlayerState.None;
+                roomManager.CurrentLadder = null;
+                gameObject.GetComponent<Rigidbody>().useGravity = true;
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            }
+        }
+
+        // start ladder collision
+        foreach (GameObject ladder in roomManager.LadderList)
+        {
+            Bounds topLadder = ladder.GetComponent<LadderProperties>().topLadder.GetComponent<Collider>().bounds;
+            Bounds bottomLadder = ladder.GetComponent<LadderProperties>().bottomLadder.GetComponent<Collider>().bounds;
+
+            if ((GetComponent<Collider>().bounds.Intersects(bottomLadder) || GetComponent<Collider>().bounds.Intersects(topLadder)) // touching the ladder while not already on it
+                && specialPlayerState != SpecialPlayerState.OnLadder)
+            {
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) // need to press appropriate key to start climbing ladder
                 {
                     specialPlayerState = SpecialPlayerState.OnLadder;
+                    roomManager.CurrentLadder = ladder;
+                    gameObject.GetComponent<Rigidbody>().useGravity = false;
+                    gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 }
-                break;
-            case SpecialPlayerState.OnLadder: // On ladder
-                if (!PlayerOnLadder()) // no longer touching ladder
-                {
-                    specialPlayerState = SpecialPlayerState.None;
-                }
-                break;
+            }
         }
     }
 
@@ -148,23 +171,6 @@ public class PlayerMovement : MonoBehaviour
                 }
             }            
         }
-    }
-
-    bool PlayerOnLadder()
-    {
-        foreach (GameObject ladder in roomManager.LadderList)
-        {
-            if (ladder.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
-            {
-                gameObject.GetComponent<Rigidbody>().useGravity = false;
-                gameObject.GetComponent<Rigidbody>().isKinematic = true;
-
-                return true; // touching some ladder
-            }
-        }
-        gameObject.GetComponent<Rigidbody>().useGravity = true;
-        gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        return false; // not touching any ladder
     }
 
     void KeyCollision()
@@ -267,20 +273,15 @@ public class PlayerMovement : MonoBehaviour
             case SpecialPlayerState.OnLadder:
                 switch (ControlMovement())
                 {
-                    case PlayerMoveControl.Left:
-                        movement = new Vector3(-1.0f, 0.0f);
-                        break;
-                    case PlayerMoveControl.Right:
-                        movement = new Vector3(1.0f, 0.0f);
-                        break;
-                    case PlayerMoveControl.Up:
-                        movement = new Vector3(0.0f, 1.0f);
-                        break;
                     case PlayerMoveControl.Down:
+                        // set the z value
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z);
                         movement = new Vector3(0.0f, -1.0f);
                         break;
-                    default:
-                        movement = new Vector3(0.0f, 0.0f);
+                    case PlayerMoveControl.Up:
+                        // set the z value
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z);
+                        movement = new Vector3(0.0f, 1.0f);
                         break;
                 }
                 break;
@@ -288,23 +289,45 @@ public class PlayerMovement : MonoBehaviour
                 StairProperties stair = roomManager.CurrentStair.GetComponent<StairProperties>();
                 Vector3 stairDir = stair.topStair.transform.position - stair.bottomStair.transform.position;
 
-                switch (ControlMovement())
+                if (stair.tag == "RightStair")
                 {
-
-                    case PlayerMoveControl.Right:
-                    case PlayerMoveControl.Down:
-                        // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                        movement = -stairDir.normalized / 1.5f;
-                        break;
-                    case PlayerMoveControl.Left:
-                    case PlayerMoveControl.Up:
-                        // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                        movement = stairDir.normalized / 1.5f;
-                        break;
+                    switch (ControlMovement())
+                    {
+                        case PlayerMoveControl.Left:
+                        case PlayerMoveControl.Down:
+                            // set the z value
+                            transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                            movement = -stairDir.normalized / 1.5f;
+                            break;
+                        case PlayerMoveControl.Right:
+                        case PlayerMoveControl.Up:
+                            // set the z value
+                            transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                            movement = stairDir.normalized / 1.5f;
+                            break;
+                    }
+                    break;
                 }
-                break;
+                else
+                {
+                    switch (ControlMovement())
+                    {
+                        case PlayerMoveControl.Right:
+                        case PlayerMoveControl.Down:
+                            // set the z value
+                            transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                            movement = -stairDir.normalized / 1.5f;
+                            break;
+                        case PlayerMoveControl.Left:
+                        case PlayerMoveControl.Up:
+                            // set the z value
+                            transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
+                            movement = stairDir.normalized / 1.5f;
+                            break;
+                    }
+                    break;
+                }
+
 
         }
         movement *= speed * Time.deltaTime;
