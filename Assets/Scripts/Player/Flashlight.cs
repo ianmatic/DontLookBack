@@ -8,13 +8,14 @@ public class Flashlight : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = transform.parent.gameObject; // currently a direct parent
+        player = GameObject.FindGameObjectWithTag("Player");
         GetComponent<Light>().enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.245f, transform.position.z);
         if (Input.GetKeyDown(KeyCode.F))
         {
             GetComponent<Light>().enabled = !GetComponent<Light>().enabled;

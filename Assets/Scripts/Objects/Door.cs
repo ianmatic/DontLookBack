@@ -52,7 +52,7 @@ public class Door : MonoBehaviour
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
+        return (gameObject.transform.position - player.transform.position).magnitude < 2.0f;
     }
 
     bool EnemyNearDoor()
