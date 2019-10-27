@@ -169,10 +169,10 @@ Light:
   serializedVersion: 9
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 23.873241
+  m_Intensity: 397.88736
   m_Range: 10
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 3
+  m_SpotAngle: 70
+  m_InnerSpotAngle: 1
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -211,7 +211,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 5, w: 5.036921}
@@ -239,7 +239,7 @@ MonoBehaviour:
   luxAtDistance: 1
   m_InnerSpotPercent: 0
   lightDimmer: 1
-  m_VolumetricDimmer: 1
+  m_VolumetricDimmer: 0.1
   lightUnit: 0
   fadeDistance: 10000
   affectDiffuse: 1
@@ -257,7 +257,7 @@ MonoBehaviour:
   useVolumetric: 1
   featuresFoldout: 1
   showAdditionalSettings: 0
-  displayLightIntensity: 300
+  displayLightIntensity: 5000
   displayAreaLightEmissiveMesh: 0
   areaLightCookie: {fileID: 0}
   areaLightShadowCone: 120
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_Version: 1
   shadowResolution: 512
   shadowDimmer: 1
-  volumetricShadowDimmer: 1
+  volumetricShadowDimmer: 0.1
   shadowFadeDistance: 10000
   contactShadows: 0
   shadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -331,4 +331,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731fd76cc3fb80d4190f0e2a74646d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  helperLight: {fileID: 0}

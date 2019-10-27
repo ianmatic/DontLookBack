@@ -140,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
             Bounds bottomStair = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
 
             bool aboveTopStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y > topStair.center.y + topStair.extents.y; // bottom of player is above top stair
-            bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y - 0.1f < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
+            bool belowBottomStair = futurePos.y - GetComponent<Renderer>().bounds.extents.y < bottomStair.center.y - bottomStair.extents.y;  //bottom of player is below bottom stair
             if (specialPlayerState == SpecialPlayerState.Stairs && // on stairs and above or below stairs
                 (aboveTopStair || belowBottomStair))
             {
@@ -223,7 +223,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     movement.y = 0;
                     // super small number added to y to prevent stuck in collisions, but so small that gravity induced jitter can't be seen
-                    futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Renderer>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.000001f);
+                    futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Collider>().bounds.size.y / 2 + (transform.localScale.y / 2) + 0.000001f);
                 }
             }
         }
