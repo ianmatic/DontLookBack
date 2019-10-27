@@ -1,9 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[System.Serializable]
 public class enemyPathfinding : MonoBehaviour
 {
+
+    //House Setup
+    public float roomWidth;
+    public float roomHeight;
+    public float baseY;
+    
+
+    [System.Serializable]
+    public struct floorDatas
+    {
+        public roomDatas[] floorData;
+        
+    }
+
+    [System.Serializable]
+    public struct roomDatas
+    {
+        public Vector2[] roomData;
+    }
+
+    public floorDatas[] houseData = new floorDatas[3];
+
     //TESTING:
     public int playerRealFloor; //TESTING: Player's Actual Floor
 
@@ -14,6 +36,7 @@ public class enemyPathfinding : MonoBehaviour
     //Private:
     private
     Vector2 enemyPosition; //Enemy's 2D position
+    float enemyZPosition;
     int enemyFloor; //Enemy's current Floor 
     Vector2 playerPosition;//Player's 2D position
     int playerFloor; //Player's current Floor as known by the Enemy (Won't always be in sync with actual player's floor)
@@ -21,9 +44,8 @@ public class enemyPathfinding : MonoBehaviour
     Vector2 enemyDestination; //Immidiate Position that Enemy is walking to.
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
     float enemySpeed = 0.04f; //Enemy Speed    Climbing speed is half.
-    float roomHeight = 5f; //Room Height: Used only in Testing with Player object
     RoomManager roomManager;
-
+    bool enemyClimbing = false;
     /// <summary>
     /// House Consists of several Lists:   From Outer to Inner:
     /// 1. List of Floors
@@ -32,20 +54,33 @@ public class enemyPathfinding : MonoBehaviour
     ///     3a. Vector2D (Ladder: 0=No/1=Yes, Direction: 0=Down/1=Up)
     ///     3b. Vector2D (Center of Room)
     /// </summary>
-    public List<List<List<Vector2>>> House; 
-
+    public List<List<List<Vector2>>> House = new List<List<List<Vector2>>> (); 
+    
     // Start is called before the first frame update
     void Start()
     {
+        for (int i = 0; i < houseData.Length; i++)
+		{
+            House.Add(new List<List<Vector2>>());
+            for (int j = 0; j < houseData[i].floorData.Length; j++)
+		    {
+                House[i].Add(new List<Vector2>());
+                for (int k = 0; k < houseData[i].floorData[j].roomData.Length; k++)
+		            {
+                        House[i][j].Add(houseData[i].floorData[j].roomData[k]);
+		            }
+		    }
+		}
+
         //Retrive Room details from (getRooms)  Will pull from Room script in the future.
-        roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
-        House = roomManager.buildHouse();
+        //roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
+        //House = roomManager.buildHouse();
 
         //Set Initial enemy Floor, set enemyPosition (Certain Room), and set GameObject position
-        enemyFloor = 2;
-        enemyPosition = House[enemyFloor][2][1];
+        enemyFloor = 3;
+        enemyPosition = enemy.transform.position;
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
-
+        enemyZPosition = 0;
         //TESTING:  sets test player floor,position, and gameobject position
         //playerRealFloor = 2;
         //playerRoom = 1;
@@ -59,29 +94,55 @@ public class enemyPathfinding : MonoBehaviour
         
         //Grabs the player's Position
         playerPosition = player.transform.position;
-
-        if(player.transform.position.y < 2)
+        if(player.transform.position.y < baseY + roomHeight)
         {
             playerFloor = 0;
         }
-        else if(player.transform.position.y > 7)
-        {
-            playerFloor = 2;
-        }
-        else
+        else if(player.transform.position.y < baseY + roomHeight*2)
         {
             playerFloor = 1;
         }
+        else if (player.transform.position.y < baseY + roomHeight*3)
+        {
+            playerFloor = 2;
+        }
+         else if (player.transform.position.y < baseY + roomHeight*4)
+        {
+            playerFloor = 3;
+        }
+
+        if(enemy.transform.position.y < baseY + roomHeight)
+        {
+            enemyFloor = 0;
+        }
+        else if(enemy.transform.position.y < baseY + roomHeight*2)
+        {
+            enemyFloor = 1;
+        }
+        else if (enemy.transform.position.y < baseY + roomHeight*3)
+        {
+            enemyFloor = 2;
+        }
+         else if (enemy.transform.position.y < baseY + roomHeight*4)
+        {
+            enemyFloor = 3;
+        }
+
         //Create new Destination if not on ladder
-        if (enemyPosition.y == enemyFloor * roomHeight - 2){
+        
+        if (  Mathf.Abs(enemyPosition.y) - ((enemyFloor * roomHeight) + baseY) < 0.01f ){
+            enemyClimbing = false;
             createPathToPLayer();
+        }
+        else {
+            enemyClimbing = true;
         }
         //Move to Destination
         moveToDestination();
 
 
         //Once done all code: Update enemy Gameobject position
-        enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
+        enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, enemyZPosition);
     }
 
     void moveToDestination()
@@ -95,11 +156,11 @@ public class enemyPathfinding : MonoBehaviour
         {
             //If Player: Move to Player at base speed untill within set buffer (Buffer code will be replaced by coliders most likely)
             case 0:
-                if (enemyPosition.x < enemyDestination.x - 0.03f || enemyPosition.x > enemyDestination.x + 0.03f)
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
                 {
                     enemyPosition.x += direction.x * enemySpeed;
                     //ONCE within buffer, Set x to exact x of Player  
-                    if (enemyPosition.x > enemyDestination.x - 0.03f && enemyPosition.x < enemyDestination.x + 0.03f)
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
                     {
                         enemyPosition.x = enemyDestination.x;
                     }
@@ -108,11 +169,10 @@ public class enemyPathfinding : MonoBehaviour
             case 1:
                 //If Ladder:
                 //If X is different then move horizontally to Ladder
-                if (enemyPosition.x < enemyDestination.x - 0.03f || enemyPosition.x > enemyDestination.x + 0.03f)
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
                 {
                     enemyPosition += direction * enemySpeed;
-
-                    if (enemyPosition.x > enemyDestination.x - 0.03f && enemyPosition.x < enemyDestination.x + 0.03f)
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
                     {
                         enemyPosition.x = enemyDestination.x;
                     }
@@ -120,19 +180,8 @@ public class enemyPathfinding : MonoBehaviour
                 //If At Ladder, Change Destination to Connected of Next Floor closer to Player
                 else
                 {
-                    
-                    if (playerFloor > enemyFloor)
-                    {
-                        enemyDestination = findLadder(enemyFloor + 1, 0);
-                    }
-                    else
-                    {
-                        enemyDestination = findLadder(enemyFloor - 1, 1);
-                    }
-                    //Reset Direction going upwards
-                    direction = (enemyDestination - enemyPosition).normalized;
                     //If Y is different, climb.  Else: set Y exactly to Destination and adjust enemyFloor to new Floor
-                    if (enemyPosition.y < enemyDestination.y - 0.03f || enemyPosition.y > enemyDestination.y + 0.03f)
+                    if (Mathf.Abs(enemyPosition.y - enemyDestination.y) > 0.03f)
                     {
                         enemyPosition += direction * (enemySpeed * 0.5f);
 
@@ -141,7 +190,49 @@ public class enemyPathfinding : MonoBehaviour
                     {
                         enemyPosition.y = enemyDestination.y;
                         enemyFloor += (int)direction.y;
-                        //Debug.Log(enemyFloor);
+                        enemyZPosition = 0;
+                    }
+                }
+                break;
+            case 2:
+                //If Stairs:
+                if ( Mathf.Abs(enemyPosition.x - enemyDestination.x) > 0.03f)
+                {
+                    if(enemyPosition.y != enemyDestination.y){enemyZPosition = 1;}
+                    enemyPosition += direction * enemySpeed;
+
+                    if (Mathf.Abs(enemyPosition.x - enemyDestination.x) <= 0.03f)
+                    {
+                        enemyPosition.x = enemyDestination.x;
+                    }
+                }
+                else
+                {
+                    enemyPosition.x = enemyDestination.x;
+                    enemyZPosition = 1;
+                   /* 
+                    if (playerFloor > enemyFloor)
+                    {
+                        enemyDestination = findLadder(enemyFloor + 1, 0);
+                    }
+                    else
+                    {
+                        enemyDestination = findLadder(enemyFloor - 1, 1);
+                    }
+                    */
+                    //Reset Direction going upwards
+                    //direction = (enemyDestination - enemyPosition).normalized;
+                    //If Y is different, climb.  Else: set Y exactly to Destination and adjust enemyFloor to new Floor
+                    if (Mathf.Abs(enemyPosition.y - enemyDestination.y) > 0.03f)
+                    {
+                        enemyPosition += direction * (enemySpeed * 0.5f);
+                    }
+                    else
+                    {
+                        enemyPosition.y = enemyDestination.y;
+                        enemy.transform.position.Set(enemyPosition.x,enemyPosition.y,0);
+                        enemyFloor += (int)direction.y;
+                        enemyZPosition = 0;
                     }
                 }
                 break;
@@ -158,30 +249,37 @@ public class enemyPathfinding : MonoBehaviour
     /// </summary>
     void createPathToPLayer()
     {
+        enemyZPosition = 0;
         //Get player floor (Will get information less directly in future)
         //playerFloor = playerRealFloor;
         //Floor Check
-        if(enemyFloor == playerFloor)
+        if( Mathf.Abs(enemyPosition.y - playerPosition.y) < 0.2f)
         {
             //Set Destination
             enemyDestination = playerPosition;
             //Set Target as Player
             enemyTarget = 0;
+            
         }
         else
         {
             //Determine which Ladder (Up or Down) to go to / Set Destination
-            if(playerFloor > enemyFloor)
+            if(playerPosition.y > enemyPosition.y)
             {
                 enemyDestination = findLadder(enemyFloor, 1);
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) < 0.1f )
+                    {
+                        enemyDestination = findLadder(enemyFloor + 1, 0);
+                    }
             }
             else
             {
                 enemyDestination = findLadder(enemyFloor, 0);
-
+                if (Mathf.Abs(enemyPosition.x - enemyDestination.x) < 0.1f )
+                    {
+                        enemyDestination = findLadder(enemyFloor - 1, 1);
+                    }
             }
-            //Set Target as Ladder
-            enemyTarget = 1;
         }
     }
     /// <summary>
@@ -192,25 +290,38 @@ public class enemyPathfinding : MonoBehaviour
     /// <returns></returns>
     Vector2 findLadder(int floor, int direction)
     {
+        if(floor < 0){floor = 0;}
         //Initial Ladder Room is invalid. POSSIBLE BREAK: If no floor on floor
         int ladderRoom = -1;
+        
         //Loop: Each Room on Floor
-        Debug.Log("floor " + floor);
+        /*Debug.Log("floor " + floor);
         Debug.Log("playerFloor " + playerFloor);
         Debug.Log("enemyFloor " + enemyFloor);
+        Debug.Log("direction " + direction);*/
         for (int i = 0; i < House[floor].Count; i++)
         {
-            //Check: Room is Ladder AND going correct direction
-            if(House[floor][i][0].x == 1 && House[floor][i][0].y == direction || House[floor][i][0].y == 2)
+            //Check: Room is Ladder or Stairs AND going correct direction 
+            if( (House[floor][i][0].x >= 1 && (House[floor][i][0].y == direction || House[floor][i][0].y == 2)  ) || House[floor][i][0].x == 3)
             {
                 //Check: If NOT first ladderRoom found
                 if (ladderRoom != -1)
                 {
-                    //Check: If distance to Ladder is less than previous ladderRoom
-                    if (Mathf.Abs(House[floor][i][1].x - enemyPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - enemyPosition.x))
-                    {
-                        ladderRoom = i;
-                    }
+                    //if( Mathf.Abs(enemyFloor - playerFloor) < 2){
+                    //    //Check: If distance to Ladder is less than previous ladderRoom (Based on Player  X then Y)
+                    //    if (Mathf.Abs(House[floor][i][1].x - playerPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - playerPosition.x))
+                    //    {
+                    //        ladderRoom = i;
+                    //    }
+                    //}
+                    //else {
+                        //Check: If distance to Ladder is less than previous ladderRoom (Based on Enemy Y then X)
+                        if (Mathf.Abs(House[floor][i][1].x - enemyPosition.x) < Mathf.Abs(House[floor][ladderRoom][1].x - enemyPosition.x))
+                        {
+                            ladderRoom = i;
+                        }
+                    //}
+                                      
                 }
                 //If first ladder found
                 else 
@@ -218,6 +329,16 @@ public class enemyPathfinding : MonoBehaviour
                     ladderRoom = i;
                 }
             }
+        }
+        
+        //Ladder
+        if( House[floor][ladderRoom][0].x == 1 || (House[floor][ladderRoom][0].x >= 3 && House[floor][ladderRoom][0].y == direction)){
+            enemyTarget = 1;
+        }
+        else {
+        //Stairs
+            enemyTarget = 2;
+            return House[floor][ladderRoom][2+direction];
         }
         // Return LadderRoom Position
         return House[floor][ladderRoom][1];
