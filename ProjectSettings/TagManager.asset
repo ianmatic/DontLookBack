@@ -12,6 +12,7 @@ TagManager:
   - RightStair
   - Key
   - Door
+  - HidingSpot
   layers:
   - Default
   - TransparentFX

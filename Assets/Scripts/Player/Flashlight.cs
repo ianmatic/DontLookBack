@@ -16,10 +16,18 @@ public class Flashlight : MonoBehaviour
     void Update()
     {
         transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.245f, transform.position.z);
-        if (Input.GetKeyDown(KeyCode.F))
+        if (player.GetComponent<PlayerMovement>().IsHiding)
         {
-            GetComponent<Light>().enabled = !GetComponent<Light>().enabled;
+            GetComponent<Light>().enabled = false;
         }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                GetComponent<Light>().enabled = !GetComponent<Light>().enabled;
+            }
+        }
+
 
         if (GetComponent<Light>().enabled) // activate flashlight
         {

@@ -7,6 +7,7 @@ enum SpecialPlayerState
     OnLadder,
     None,
     Stairs,
+    Hiding
 }
 
 enum PlayerMoveControl
@@ -66,6 +67,41 @@ public class PlayerMovement : MonoBehaviour
         StairCollision();
         KeyCollision();
         RoomCollision();
+        HidingCollision();
+    }
+
+
+    void HidingCollision()
+    {
+        // Press C to toggle hiding
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            foreach (GameObject hidingSpot in roomManager.HidingSpotList)
+            {
+                // at a hiding spot
+                if (hidingSpot.GetComponent<Collider>().bounds.Intersects(GetComponent<Collider>().bounds))
+                {
+                    roomManager.CurrentHidingSpot = hidingSpot;
+
+                    if (specialPlayerState == SpecialPlayerState.Hiding)
+                    {
+                        specialPlayerState = SpecialPlayerState.None;
+                        futurePos.z = 0; // reset z value
+                    }
+                    else
+                    {
+                        specialPlayerState = SpecialPlayerState.Hiding;
+                    }
+                    break;
+                }
+            }
+        }
+
+        // set z value very frame, not just when when button pressed
+        if (specialPlayerState == SpecialPlayerState.Hiding)
+        {
+            futurePos.z = roomManager.CurrentHidingSpot.transform.position.z;
+        }
     }
 
     void LadderCollision()
@@ -135,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                     }
                 }
-            }    
+            }
         }
     }
 
@@ -180,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
                     gameObject.GetComponent<Rigidbody>().useGravity = false;
                     gameObject.GetComponent<Rigidbody>().isKinematic = true;
                 }
-            }            
+            }
         }
     }
 
@@ -188,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
     {
         foreach (GameObject key in roomManager.KeyList)
         {
-            if(key.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
+            if (key.GetComponent<BoxCollider>().bounds.Intersects(gameObject.GetComponent<BoxCollider>().bounds))
             {
                 key.GetComponent<Key>().GrabKey();
             }
@@ -247,7 +283,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GetComponent<Collider>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Renderer>().bounds))
         {
-           KillPlayer();
+            KillPlayer();
         }
     }
 
@@ -270,13 +306,14 @@ public class PlayerMovement : MonoBehaviour
         switch (specialPlayerState)
         {
             case SpecialPlayerState.None:
-                switch(ControlMovement())
+                switch (ControlMovement())
                 {
                     case PlayerMoveControl.Left:
                         movement = new Vector3(-1.0f, 0.0f);
                         animator.SetBool("isRunning", true);
                         animator.SetBool("isClimbing", false);
                         animator.SetBool("isScaling", false);
+                        animator.SetBool("isHiding", false);
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                         transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
@@ -286,6 +323,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isRunning", true);
                         animator.SetBool("isClimbing", false);
                         animator.SetBool("isScaling", false);
+                        animator.SetBool("isHiding", false);
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                         transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
@@ -295,6 +333,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", false);
                         animator.SetBool("isScaling", false);
+                        animator.SetBool("isHiding", false);
                         break;
                 }
                 break;
@@ -312,6 +351,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
                         animator.SetBool("isScaling", false);
+                        animator.SetBool("isHiding", false);
                         animator.enabled = true;
                         break;
                     case PlayerMoveControl.Up:
@@ -326,6 +366,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
                         animator.SetBool("isScaling", false);
+                        animator.SetBool("isHiding", false);
                         animator.enabled = true;
                         break;
                     default:
@@ -350,6 +391,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
                             animator.SetBool("isScaling", true);
+                            animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                             animator.enabled = true;
                             break;
@@ -362,6 +404,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
                             animator.SetBool("isScaling", true);
+                            animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                             animator.enabled = true;
                             break;
@@ -384,6 +427,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
                             animator.SetBool("isScaling", true);
+                            animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                             animator.enabled = true;
                             break;
@@ -396,6 +440,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
                             animator.SetBool("isScaling", true);
+                            animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                             animator.enabled = true;
                             break;
@@ -405,8 +450,16 @@ public class PlayerMovement : MonoBehaviour
                     }
                     break;
                 }
+            case SpecialPlayerState.Hiding:
+                // set the z value
+                transform.position = new Vector3(transform.position.x, roomManager.CurrentHidingSpot.transform.position.y, roomManager.CurrentHidingSpot.transform.position.z);
+                transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
 
-
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isClimbing", false);
+                animator.SetBool("isScaling", false);
+                animator.SetBool("isHiding", true);
+                break;
         }
         movement *= speed * Time.deltaTime;
         futurePos = transform.position + movement; // where the player wants to go
@@ -414,25 +467,25 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-            transform.position = futurePos;
+        transform.position = futurePos;
     }
 
     //Write all movement control options in here
     PlayerMoveControl ControlMovement()
     {
-        if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) //move left
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) //move left
         {
             return PlayerMoveControl.Left;
         }
-        else if(Input.GetKey(KeyCode.RightArrow)|| Input.GetKey(KeyCode.D)) //move right
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) //move right
         {
             return PlayerMoveControl.Right;
         }
-        else if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) //move up
+        else if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) //move up
         {
             return PlayerMoveControl.Up;
         }
-        else if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) //move down
+        else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) //move down
         {
             return PlayerMoveControl.Down;
         }
@@ -440,5 +493,12 @@ public class PlayerMovement : MonoBehaviour
         {
             return PlayerMoveControl.None;
         }
+    }
+
+
+
+    public bool IsHiding
+    {
+        get { return specialPlayerState == SpecialPlayerState.Hiding; }
     }
 }
