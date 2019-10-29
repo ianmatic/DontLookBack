@@ -342,7 +342,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     case PlayerMoveControl.Down:
                         // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z);
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
                         movement = new Vector3(0.0f, -1.0f);
 
                         currentOrientation = transform.rotation;
@@ -356,7 +356,7 @@ public class PlayerMovement : MonoBehaviour
                         break;
                     case PlayerMoveControl.Up:
                         // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z);
+                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
                         movement = new Vector3(0.0f, 1.0f);
 
 

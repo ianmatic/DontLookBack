@@ -365,7 +365,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 255
   m_Lightmapping: 2
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
@@ -414,7 +414,7 @@ MonoBehaviour:
   useOldInspector: 0
   useVolumetric: 1
   featuresFoldout: 1
-  showAdditionalSettings: 0
+  showAdditionalSettings: 1
   displayLightIntensity: 1000
   displayAreaLightEmissiveMesh: 0
   areaLightCookie: {fileID: 0}
@@ -425,7 +425,7 @@ MonoBehaviour:
   evsmVarianceBias: 0.00001
   evsmBlurPasses: 0
   lightLayers: 1
-  lightlayersMask: 1
+  lightlayersMask: 255
   linkShadowLayers: 1
   shadowNearPlane: 0.0001
   shadowSoftness: 0.5
@@ -547,7 +547,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2533892348656719781}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.588435, y: 6.73962, z: 6.742444}
+  m_LocalPosition: {x: -5.5410876, y: 7.1480002, z: 6.374515}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children:
   - {fileID: 389795162193088348}
