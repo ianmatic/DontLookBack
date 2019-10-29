@@ -12,8 +12,8 @@ public class Door : MonoBehaviour
     public bool needKey;
     public bool exitDoor;
 
-    public Material lockedTexture;
-    public Material unlockedTexture;
+    private Color lockColor;
+    private Color unlockColor;
 
     void Start()
     {
@@ -21,8 +21,11 @@ public class Door : MonoBehaviour
         enemy = GameObject.FindGameObjectWithTag("Enemy");
         animator = gameObject.GetComponent<Animator>();
 
+        lockColor = Color.red;
+        unlockColor = Color.green;
+
         doorOpen = false;
-        if(needKey) { ApplyDoorTexture(lockedTexture); }
+        if(needKey) { AlterDoorLight(lockColor); }
     }
 
     void Update()
@@ -35,6 +38,8 @@ public class Door : MonoBehaviour
                 {
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
                     doorOpen = !doorOpen;
+
+                    if(transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
 
                     if (exitDoor)
                     {
@@ -63,16 +68,17 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
-        ApplyDoorTexture(unlockedTexture);
-    }
-
-    void ApplyDoorTexture(Material m)
-    {
-        transform.GetChild(0).GetComponent<Renderer>().material = m;
+        AlterDoorLight(unlockColor);
     }
 
     public bool DoorOpen
     {
         get { return doorOpen; }
+    }
+
+    void AlterDoorLight(Color c)
+    {
+        Light doorlight = transform.GetChild(1).GetComponent<Light>();
+        doorlight.color = c;
     }
 }
