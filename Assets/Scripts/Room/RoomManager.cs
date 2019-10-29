@@ -19,6 +19,7 @@ public class RoomManager : MonoBehaviour
     private GameObject currentStair;
     private GameObject currentLadder;
     private GameObject currentHidingSpot;
+    public string nameOfCurrentLevel;
 
     // Start is called before the first frame update
     void Awake()
@@ -41,7 +42,8 @@ public class RoomManager : MonoBehaviour
         hidingSpotList = new List<GameObject>();
         hidingSpotList.AddRange(GameObject.FindGameObjectsWithTag("HidingSpot"));
         player = GameObject.FindGameObjectWithTag("Player");
-
+        nameOfCurrentLevel = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
