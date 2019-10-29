@@ -452,7 +452,7 @@ public class PlayerMovement : MonoBehaviour
                 }
             case SpecialPlayerState.Hiding:
                 // set the z value
-                transform.position = new Vector3(transform.position.x, roomManager.CurrentHidingSpot.transform.position.y, roomManager.CurrentHidingSpot.transform.position.z);
+                transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentHidingSpot.transform.position.z);
                 transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
 
                 animator.SetBool("isRunning", false);

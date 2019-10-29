@@ -36,20 +36,12 @@ public class Flashlight : MonoBehaviour
             float hitDistance;
             zPlane.Raycast(mouseRay, out hitDistance); // shoot a ray from mouse position to the plane, and retrieve the length of the ray
             Vector3 hitPoint = mouseRay.GetPoint(hitDistance); // get the exact point at which the ray hit the plane
-            Debug.Log(hitDistance);
+            //Debug.Log(hitDistance);
             Vector3 lookAtOrigin;
-            if (hitDistance > 10)
-            {
-                lookAtOrigin = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-            }
-            else
-            {
-                lookAtOrigin = new Vector3(transform.position.x, transform.position.y, -1);
-            }
             // as the mouse get closer to the player, the flashlight looks more toward the "back" of the room
             lookAtOrigin = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, -1), hitDistance / 10.0f);
             transform.rotation = Quaternion.LookRotation((hitPoint - lookAtOrigin).normalized); // look at the exact point from the player's position
-            Debug.DrawRay(mouseRay.origin, mouseRay.direction * Vector3.Distance(mouseRay.origin, hitPoint), Color.red, 50);
+            //Debug.DrawRay(mouseRay.origin, mouseRay.direction * Vector3.Distance(mouseRay.origin, hitPoint), Color.red, 50);
         }
     }
 }
