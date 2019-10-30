@@ -44,7 +44,6 @@ public class RoomManager : MonoBehaviour
         hidingSpotList.AddRange(GameObject.FindGameObjectsWithTag("HidingSpot"));
         player = GameObject.FindGameObjectWithTag("Player");
         nameOfCurrentLevel = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        DontDestroyOnLoad(gameObject);
     }
 
     void Update()

@@ -122,7 +122,13 @@ public class Door : MonoBehaviour
                         FindObjectOfType<AudioManager>().Play("enemyDoor", gameObject);
                     }
                 }
+            } else {
+                if (enemyScript.enemyStateProp == enemyPathfinding.State.Opening)
+                {
+                    enemyScript.revertState();
+                }
             }
+
         }
     }
 
