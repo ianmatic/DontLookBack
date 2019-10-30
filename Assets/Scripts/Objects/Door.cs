@@ -39,12 +39,23 @@ public class Door : MonoBehaviour
                     animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
                     doorOpen = !doorOpen;
 
+                    if (doorOpen)
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerOpen");
+                    } else
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerClose");
+                    }
+
                     if(transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
 
                     if (exitDoor)
                     {
                         SceneLoader.LoadScene("victoryScene");
                     }
+                } else
+                {
+                    FindObjectOfType<AudioManager>().Play("doorLocked");
                 }
             }
         }
@@ -68,6 +79,7 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
+        FindObjectOfType<AudioManager>().Play("doorUnlocked");
         AlterDoorLight(unlockColor);
     }
 
