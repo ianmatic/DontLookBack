@@ -9,6 +9,7 @@ public class Door : MonoBehaviour
     Animator animator;
 
     bool doorOpen;
+    float doorOpenTimer;
     public bool needKey;
     public bool exitDoor;
 
@@ -25,12 +26,13 @@ public class Door : MonoBehaviour
         unlockColor = Color.green;
 
         doorOpen = false;
-        if(needKey) { AlterDoorLight(lockColor); }
+        doorOpenTimer = 3f;
+        if (needKey) { AlterDoorLight(lockColor); }
     }
 
     void Update()
     {
-        if(NearDoor()) // Checks if the player is near the door
+        if(NearDoor() && (!EnemyNearDoor() || !doorOpen) ) // Checks if the player is near the door
         {
             if(Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
             {
@@ -86,22 +88,44 @@ public class Door : MonoBehaviour
             }
         }
 
+
         if(EnemyNearDoor())
         {
-            if(LeftOrRight(enemy.transform.position))
-            {
-                animator.SetBool("doorOpen", true);
+            enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
+            enemyScript.Door = this;
+            if(!doorOpen){
+                if(enemyScript.enemyStateProp != enemyPathfinding.State.Opening){
+                enemyScript.enemyStateProp = enemyPathfinding.State.Opening;
+                }
+                if(!needKey)
+                {
+                    doorOpenTimer-= Time.deltaTime;
+                    if(doorOpenTimer < 0){
+                        enemyScript.revertState();
+                        if (LeftOrRight(enemy.transform.position))
+                        {
+                            animator.SetBool("doorOpen", true);
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpenLeft", true);
+                        }
+                        doorOpen = true;
+                        doorOpenTimer = 3f;
+                    }
+                }
             }
-            else
-            {
-                animator.SetBool("doorOpenLeft", true);
+            else {
+                if(enemyScript.enemyStateProp == enemyPathfinding.State.Opening){
+                enemyScript.revertState();
+                }
             }
         }
     }
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return (gameObject.transform.position - player.transform.position).magnitude < 3.5f;
+        return (gameObject.transform.position - player.transform.position).magnitude < 3f;
     }
 
     bool EnemyNearDoor()
@@ -124,6 +148,11 @@ public class Door : MonoBehaviour
     public bool DoorOpen
     {
         get { return doorOpen; }
+    }
+
+    public float DoorOpenTimer
+    {
+        get { return doorOpenTimer;}
     }
 
     void AlterDoorLight(Color c)
