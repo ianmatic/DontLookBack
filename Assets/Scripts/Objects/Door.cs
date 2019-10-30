@@ -100,9 +100,9 @@ public class Door : MonoBehaviour
             //{
             //    animator.SetBool("doorOpenLeft", true);
             //}
+            enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
             if (!doorOpen)
             {
-                enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
                 enemyScript.Door = this;
                 if (enemyScript.enemyStateProp != enemyPathfinding.State.Opening)
                 {
