@@ -36,8 +36,34 @@ public class Door : MonoBehaviour
             {
                 if(!needKey)
                 {
-                    animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
-                    doorOpen = !doorOpen;
+                    if(LeftOrRight(player.transform.position))
+                    {
+                        if(animator.GetBool("doorOpenLeft"))
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(animator.GetBool("doorOpen"));
+                        if (animator.GetBool("doorOpen"))
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }   
+                    }
+                    
 
                     if(transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
 
@@ -51,13 +77,20 @@ public class Door : MonoBehaviour
 
         if(EnemyNearDoor())
         {
-            animator.SetBool("doorOpen", true);
+            if(LeftOrRight(enemy.transform.position))
+            {
+                animator.SetBool("doorOpen", true);
+            }
+            else
+            {
+                animator.SetBool("doorOpenLeft", true);
+            }
         }
     }
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return (gameObject.transform.position - player.transform.position).magnitude < 2.0f;
+        return (gameObject.transform.position - player.transform.position).magnitude < 3f;
     }
 
     bool EnemyNearDoor()
@@ -69,6 +102,11 @@ public class Door : MonoBehaviour
     {
         needKey = false;
         AlterDoorLight(unlockColor);
+    }
+
+    bool LeftOrRight(Vector3 position)
+    {
+        return (gameObject.transform.position.x - position.x) > 0;
     }
 
     public bool DoorOpen
