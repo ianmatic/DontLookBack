@@ -9,6 +9,7 @@ public class Door : MonoBehaviour
     Animator animator;
 
     bool doorOpen;
+    float doorOpenTimer;
     public bool needKey;
     public bool exitDoor;
 
@@ -25,39 +26,106 @@ public class Door : MonoBehaviour
         unlockColor = Color.green;
 
         doorOpen = false;
-        if(needKey) { AlterDoorLight(lockColor); }
+        if (needKey) { AlterDoorLight(lockColor); }
+        doorOpenTimer = 3f;
     }
 
     void Update()
     {
-        if(NearDoor()) // Checks if the player is near the door
+        if (NearDoor() && (!EnemyNearDoor() || !doorOpen)) // Checks if the player is near the door
         {
-            if(Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
+            if (Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
             {
-                if(!needKey)
+                if (!needKey)
                 {
-                    animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
-                    doorOpen = !doorOpen;
+                    if (LeftOrRight(player.transform.position))
+                    {
+                        if (animator.GetBool("doorOpenLeft"))
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(animator.GetBool("doorOpen"));
+                        if (animator.GetBool("doorOpen"))
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }
+                    }
 
-                    if(transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
+
+                    if (doorOpen)
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerOpen");
+                    }
+                    else
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerClose");
+                    }
+
+                    if (transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
 
                     if (exitDoor)
                     {
                         SceneLoader.LoadScene("victoryScene");
                     }
                 }
+                else
+                {
+                    FindObjectOfType<AudioManager>().Play("doorLocked");
+                }
             }
         }
 
-        if(EnemyNearDoor())
+        if (EnemyNearDoor())
         {
-            animator.SetBool("doorOpen", true);
+            //if (LeftOrRight(enemy.transform.position))
+            //{
+            //    animator.SetBool("doorOpen", true);
+            //}
+            //else
+            //{
+            //    animator.SetBool("doorOpenLeft", true);
+            //}
+            if (!doorOpen)
+            {
+                enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
+                enemyScript.Door = this;
+                if (enemyScript.enemyStateProp != enemyPathfinding.State.Opening)
+                {
+                    enemyScript.enemyStateProp = enemyPathfinding.State.Opening;
+                }
+                if (!needKey)
+                {
+                    doorOpenTimer -= Time.deltaTime;
+                    if (doorOpenTimer < 0)
+                    {
+                        enemyScript.revertState();
+                        animator.SetBool("doorOpen", true);
+                        doorOpen = true;
+                        doorOpenTimer = 3f;
+                    }
+                }
+            }
         }
     }
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return (gameObject.transform.position - player.transform.position).magnitude < 2.0f;
+        return (gameObject.transform.position - player.transform.position).magnitude < 3.5f;
     }
 
     bool EnemyNearDoor()
@@ -68,7 +136,13 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
+        FindObjectOfType<AudioManager>().Play("doorUnlocked");
         AlterDoorLight(unlockColor);
+    }
+
+    bool LeftOrRight(Vector3 position)
+    {
+        return (gameObject.transform.position.x - position.x) > 0;
     }
 
     public bool DoorOpen
@@ -80,5 +154,9 @@ public class Door : MonoBehaviour
     {
         Light doorlight = transform.GetChild(1).GetComponent<Light>();
         doorlight.color = c;
+    }
+    public float DoorOpenTimer
+    {
+        get { return doorOpenTimer; }
     }
 }
