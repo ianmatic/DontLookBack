@@ -5,47 +5,30 @@ using UnityEngine;
 public class enemyPathfinding : MonoBehaviour
 {
 
-    //House Setup
-    public float roomWidth;
-    public float roomHeight;
-    public float baseY;
-    
-
-    [System.Serializable]
-    public struct floorDatas
-    {
-        public roomDatas[] floorData;
-        
-    }
-
-    [System.Serializable]
-    public struct roomDatas
-    {
-        public Vector2[] roomData;
-    }
-
-    public floorDatas[] houseData = new floorDatas[3];
-
-    //TESTING:
-    public int playerRealFloor; //TESTING: Player's Actual Floor
-
     //Public:
     public GameObject enemy;  //Enemy GameObject (Incase not directly attached)
     public GameObject player; //Player GameObject (Until middleman)
 
     //Private:
-    private
     Vector2 enemyPosition; //Enemy's 2D position
     float enemyZPosition;
-    int enemyFloor; //Enemy's current Floor 
+    //int enemyFloor; //Enemy's current Floor 
     Vector2 playerPosition;//Player's 2D position
-    int playerFloor; //Player's current Floor as known by the Enemy (Won't always be in sync with actual player's floor)
+    //int playerFloor; //Player's current Floor as known by the Enemy (Won't always be in sync with actual player's floor)
     int playerRoom; //Player's current Room as known by the Enemy (Won't always be in sync with actual player's room)
     Vector2 enemyDestination; //Immidiate Position that Enemy is walking to.
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
     float enemySpeed = 0.04f; //Enemy Speed    Climbing speed is half.
     RoomManager roomManager;
     bool enemyClimbing = false;
+
+    bool exitUnlocked = false;
+    float huntTimerMax = 10f;
+    float huntTimer = 0;
+    RoomProperties.Type pathTarget = RoomProperties.Type.none;
+    RoomProperties.Type pathPreviousTarget = RoomProperties.Type.none;
+    List<Vector2> enemyPath = new List<Vector2>();
+    RoomProperties wanderDestination;
     /// <summary>
     /// House Consists of several Lists:   From Outer to Inner:
     /// 1. List of Floors
@@ -54,11 +37,47 @@ public class enemyPathfinding : MonoBehaviour
     ///     3a. Vector2D (Ladder: 0=No/1=Yes, Direction: 0=Down/1=Up)
     ///     3b. Vector2D (Center of Room)
     /// </summary>
-    public List<List<List<Vector2>>> House = new List<List<List<Vector2>>> (); 
-    
+    public List<List<List<Vector2>>> House = new List<List<List<Vector2>>> ();
+    public List<List<RoomProperties>> HouseNew = new List<List<RoomProperties>>();
+
+    public Door Door { get; set; }
+    private GameObject enemyRoom
+    {
+        get { return roomManager.EnemyRoomList[0];}
+    }
+    //Enemy's current Floor 
+	public int enemyFloor
+	{
+        //Get Floor from roomManager's enemyRoom  (0) cause only 1 enemy
+		get { return enemyRoom.GetComponent<RoomProperties>().floor;}
+	}
+
+    private int playerFloor
+    {
+        //Get Floor from roomManager's PlayerRoom
+		get { return roomManager.PlayerRoom.GetComponent<RoomProperties>().floor;}
+    }
+
+    public enum State
+	{
+        Wandering,
+        Hunting,
+        Climbing,
+        Opening,
+	}
+    private State enemyStoredState;
+    private State enemyState;
+    public State enemyStateProp
+    {
+        get {return enemyState;}
+        set {enemyStoredState = enemyState; enemyState = value;}
+    }
     // Start is called before the first frame update
     void Start()
     {
+        roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
+        HouseNew = roomManager.buildHouseNew();
+        /*
         for (int i = 0; i < houseData.Length; i++)
 		{
             House.Add(new List<List<Vector2>>());
@@ -78,55 +97,43 @@ public class enemyPathfinding : MonoBehaviour
 
         //Set Initial enemy Floor, set enemyPosition (Certain Room), and set GameObject position
         enemyFloor = 3;
-        enemyPosition = enemy.transform.position;
-        enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
-        enemyZPosition = 0;
+        
         //TESTING:  sets test player floor,position, and gameobject position
         //playerRealFloor = 2;
         //playerRoom = 1;
         //playerPosition = player.transform.position + new Vector3(0.49f,0, 0);
+        */
+        enemyState = State.Wandering;
 
+        enemyPosition = enemy.transform.position;
+        enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
+        enemyZPosition = 0;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        switch (enemyState)
+	{
+		case State.Wandering:
+            Wander();
+            break;
+        case State.Hunting:
+            Hunt();
+            break;
+        case State.Climbing:
+            moveToDestination();
+            break;
+        case State.Opening:
+            Bang();
+            break;
+        default:
+            break;
+	}
+        /*
         //Grabs the player's Position
         playerPosition = player.transform.position;
-        if(player.transform.position.y < baseY + roomHeight)
-        {
-            playerFloor = 0;
-        }
-        else if(player.transform.position.y < baseY + roomHeight*2)
-        {
-            playerFloor = 1;
-        }
-        else if (player.transform.position.y < baseY + roomHeight*3)
-        {
-            playerFloor = 2;
-        }
-         else if (player.transform.position.y < baseY + roomHeight*4)
-        {
-            playerFloor = 3;
-        }
-
-        if(enemy.transform.position.y < baseY + roomHeight)
-        {
-            enemyFloor = 0;
-        }
-        else if(enemy.transform.position.y < baseY + roomHeight*2)
-        {
-            enemyFloor = 1;
-        }
-        else if (enemy.transform.position.y < baseY + roomHeight*3)
-        {
-            enemyFloor = 2;
-        }
-         else if (enemy.transform.position.y < baseY + roomHeight*4)
-        {
-            enemyFloor = 3;
-        }
+        
 
         //Create new Destination if not on ladder
         
@@ -140,15 +147,137 @@ public class enemyPathfinding : MonoBehaviour
         //Move to Destination
         moveToDestination();
 
-
+        */
+        if(huntTimer > 0){Debug.Log(huntTimer);}
+        if(huntTimer > 0){huntTimer -= Time.deltaTime;}
+        Debug.Log(enemyState);
         //Once done all code: Update enemy Gameobject position
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, enemyZPosition);
     }
 
     void moveToDestination()
     {
-        //Direction of movement (Distance between enemy and its destination, normalized))
+        if(enemyPath.Count == 0){return;}
+
+
         Vector2 direction;
+        switch (enemyState)
+	    {
+	    	case State.Wandering:
+                    direction = new Vector2(enemyPath[0].x - enemyPosition.x,0).normalized;
+                    enemyPosition.x += direction.x * (enemySpeed/2);
+                    switch (pathTarget)
+                	{
+                		case RoomProperties.Type.none:
+                            
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                            }
+                            break;
+                        case RoomProperties.Type.ladder:
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                               enemyState = State.Climbing;
+                            }
+                             break;
+                        case RoomProperties.Type.stairs:
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                               enemyState = State.Climbing;
+                            }
+                             break;
+                        default:
+                             break;
+	                }
+                break;
+            case State.Hunting: 
+                direction = new Vector2(enemyPath[0].x - enemyPosition.x,0).normalized;
+                enemyPosition.x += direction.x * (enemySpeed);
+                switch (pathTarget)
+                	{
+                		case RoomProperties.Type.none:
+                            
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                            }
+                            break;
+                        case RoomProperties.Type.ladder:
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                               enemyState = State.Climbing;
+                            }
+                             break;
+                        case RoomProperties.Type.stairs:
+                            if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.03f){
+                                enemyPath.RemoveAt(0);
+                               enemyState = State.Climbing;
+                            }
+                             break;
+                        default:
+                             break;
+	                }
+                break;
+            case State.Climbing:
+                    switch (pathTarget)
+                	{
+                        case RoomProperties.Type.ladder:
+                            direction = new Vector2(0,enemyPath[0].y - enemyPosition.y).normalized;
+                                if(huntTimer > 0){enemyPosition.y += direction.y * (enemySpeed / 1.5f);}
+                                else{enemyPosition.y += direction.y * (enemySpeed / 2f);}
+                            if(Mathf.Abs( (enemyPosition.y - enemyPath[0].y)) < 0.03f){
+                               enemyPosition = enemyPath[0];
+                               enemyPath.RemoveAt(0);
+                               enemyState = State.Wandering;
+                               pathTarget = RoomProperties.Type.none;
+
+                                if(huntTimer > 0 || exitUnlocked){enemyState = State.Hunting;}
+                            }
+                             break;
+                        case RoomProperties.Type.stairs:
+                            enemyZPosition = 1;
+                            direction = (enemyPath[0] - enemyPosition).normalized;
+                            if(huntTimer > 0){enemyPosition += direction * (enemySpeed / 1.5f);}
+                                else{enemyPosition += direction * (enemySpeed / 2f);}
+                            if( (enemyPosition - enemyPath[0]).magnitude  < 0.03f){
+                                enemyPosition = enemyPath[0];
+                               enemyPath.RemoveAt(0);
+                               enemyState = State.Wandering;
+                               pathTarget = RoomProperties.Type.none;
+                               enemyZPosition = 0;
+                                if(huntTimer > 0 || exitUnlocked){enemyState = State.Hunting;}
+                            }
+                             break;
+                        default:
+                             break;
+	                }
+
+                    //Debug.Log(enemyFloor);
+
+                break;
+            default:
+                break;
+	    }
+        
+        if(enemyPath.Count == 0){wanderDestination = null;}
+        /*
+        Debug.Log("Floor: " + enemyFloor);
+        Debug.Log("Path Count: " + enemyPath.Count);
+        foreach (var item in enemyPath)
+	    {
+            Debug.Log(item);
+	    }
+        Debug.Log("Destination: " + enemyPath[0]);
+        //Direction of movement (Distance between enemy and its destination, normalized))
+        direction = new Vector2(enemyPath[0].x - enemyPosition.x,0).normalized;
+        enemyPosition.x += direction.x * enemySpeed;
+        if(Mathf.Abs( (enemyPosition.x - enemyPath[0].x)) < 0.3f && Mathf.Abs( (enemyPosition.y - enemyPath[0].y)) <= 1f){
+            enemyPath.RemoveAt(0);
+            if(enemyPath.Count == 0){wanderDestination = null;}
+        }
+        */
+        //Debug.Log(direction);
+
+        /*
         direction = (enemyDestination - enemyPosition).normalized;
 
         //Main Switch statement based on what the Destination is: player vs Ladder
@@ -189,7 +318,7 @@ public class enemyPathfinding : MonoBehaviour
                     else
                     {
                         enemyPosition.y = enemyDestination.y;
-                        enemyFloor += (int)direction.y;
+                        //enemyFloor += (int)direction.y;
                         enemyZPosition = 0;
                     }
                 }
@@ -210,7 +339,7 @@ public class enemyPathfinding : MonoBehaviour
                 {
                     enemyPosition.x = enemyDestination.x;
                     enemyZPosition = 1;
-                   /* 
+                    /* 
                     if (playerFloor > enemyFloor)
                     {
                         enemyDestination = findLadder(enemyFloor + 1, 0);
@@ -220,6 +349,8 @@ public class enemyPathfinding : MonoBehaviour
                         enemyDestination = findLadder(enemyFloor - 1, 1);
                     }
                     */
+                    
+        /*
                     //Reset Direction going upwards
                     //direction = (enemyDestination - enemyPosition).normalized;
                     //If Y is different, climb.  Else: set Y exactly to Destination and adjust enemyFloor to new Floor
@@ -231,7 +362,7 @@ public class enemyPathfinding : MonoBehaviour
                     {
                         enemyPosition.y = enemyDestination.y;
                         enemy.transform.position.Set(enemyPosition.x,enemyPosition.y,0);
-                        enemyFloor += (int)direction.y;
+                       // enemyFloor += (int)direction.y;
                         enemyZPosition = 0;
                     }
                 }
@@ -240,6 +371,7 @@ public class enemyPathfinding : MonoBehaviour
             default: Debug.Log("ERROR: INVALID EnemyTarget: " + enemyTarget);
                 break;
         }
+        */
     }
 
     /// <summary>
@@ -342,5 +474,234 @@ public class enemyPathfinding : MonoBehaviour
         }
         // Return LadderRoom Position
         return House[floor][ladderRoom][1];
+    }
+
+    void findladder(int direction)
+    {
+        Vector2 firstDestination = new Vector2(0,0);
+        Vector2 secondDestination = new Vector2(0,0);
+        switch (direction)
+	    {
+            case 0:
+            foreach (RoomProperties room in HouseNew[enemyFloor])
+	        {
+                if(room.downPath){
+                    switch (room.downType)
+	                {
+                        case RoomProperties.Type.ladder:
+                            LadderProperties newLadderProp = room.downProperties.GetComponent<LadderProperties>();
+                            Vector2 newLadder = newLadderProp.topLadder.transform.position;
+                            if(firstDestination != new Vector2(0,0)){
+                                if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newLadder.x)){
+                                    firstDestination = newLadder;
+                                    secondDestination = newLadderProp.bottomLadder.transform.position;
+                                    secondDestination.y+= 0.75f;
+                                    pathTarget = RoomProperties.Type.ladder;
+                                }
+                            } else {
+                                firstDestination = newLadder;
+                                secondDestination = newLadderProp.bottomLadder.transform.position;
+                                secondDestination.y+= 0.75f;
+                                pathTarget = RoomProperties.Type.ladder;
+                            }
+                            break;
+                        case RoomProperties.Type.stairs:
+                            StairProperties newStairProp = room.downProperties.GetComponent<StairProperties>();
+                            Vector2 newStair = newStairProp.topStair.transform.position;
+                            if(firstDestination  != new Vector2(0,0)){
+                                if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newStair.x)){
+                                    firstDestination = newStair;
+                                    firstDestination.y+= 0.25f;
+                                    secondDestination = newStairProp.bottomStair.transform.position;
+                                    secondDestination.y+= 0.75f;
+                                    pathTarget = RoomProperties.Type.stairs;
+                                }
+                            } else {
+                                firstDestination = newStair;
+                                firstDestination.y+= 0.25f;
+                                secondDestination = newStairProp.bottomStair.transform.position;
+                                secondDestination.y+= 0.75f;
+                                pathTarget = RoomProperties.Type.stairs;
+                            }
+                            break;
+                        default:
+                            break;
+	                }
+                }
+	        }
+                break;
+            case 1:
+            foreach (RoomProperties room in HouseNew[enemyFloor])
+	        {
+                if(room.upPath){
+                    switch (room.upType)
+	                {
+                        case RoomProperties.Type.ladder:
+                            LadderProperties newLadderProp = room.upProperties.GetComponent<LadderProperties>();
+                            Vector2 newLadder = newLadderProp.bottomLadder.transform.position;
+                            if(firstDestination  != null){
+                                if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newLadder.x)){
+                                    firstDestination = newLadder;
+                                    firstDestination.y+= 0.75f;
+                                    secondDestination = newLadderProp.topLadder.transform.position;
+                                    pathTarget = RoomProperties.Type.ladder;
+                                }
+                            } else {
+                                firstDestination = newLadder;
+                                firstDestination.y+= 0.75f;
+                                secondDestination = newLadderProp.topLadder.transform.position;
+                                pathTarget = RoomProperties.Type.ladder;
+
+                            }
+                            break;
+                        case RoomProperties.Type.stairs:
+                            StairProperties newStairProp = room.upProperties.GetComponent<StairProperties>();
+                            Vector2 newStair = newStairProp.bottomStair.transform.position;
+                            if(firstDestination  != null){
+                                if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newStair.x)){
+                                    firstDestination = newStair;
+                                    firstDestination.y+= 0.75f;
+                                    secondDestination = newStairProp.topStair.transform.position;
+                                    secondDestination.y+= 0.25f;
+                                    pathTarget = RoomProperties.Type.stairs;
+                                }
+                            } else {
+                                firstDestination = newStair;
+                                firstDestination.y+= 0.75f;
+                                secondDestination = newStairProp.topStair.transform.position;
+                                secondDestination.y+= 0.25f;
+                                pathTarget = RoomProperties.Type.stairs;
+                            }
+                            break;
+                        default:
+                            break;
+	                }
+                }
+	        }
+                break;
+		    default:
+                break;
+
+            
+	    }
+        enemyPath.Insert(0, secondDestination);
+        enemyPath.Insert(0, firstDestination);
+    }
+
+    void Wander(){
+        if(wanderDestination){
+            
+            moveToDestination();
+        } else {
+        enemyPath.Clear();
+        int chance = Random.Range(0,2);
+            //Debug.Log("Chance: " + chance);
+        int randomRoom = 0;
+        switch (chance)
+	        {
+                case 0:
+                    randomRoom = Random.Range(0,HouseNew[enemyFloor].Count);
+                    wanderDestination = HouseNew[enemyFloor][randomRoom];
+                    enemyPath.Add(wanderDestination.center);
+                    pathTarget = RoomProperties.Type.none;
+                    break;
+                case 1:
+                    chance = Random.Range(0,2);
+                    switch (chance)
+                	{
+                        case 0:
+                            if(enemyFloor - 1 >= 0){
+                                randomRoom = Random.Range(0,HouseNew[enemyFloor-1].Count);
+                                wanderDestination = HouseNew[enemyFloor-1][randomRoom];
+                                findladder(0);
+                                enemyPath.Add(wanderDestination.center);
+                            }
+                            break;
+                        case 1:
+                            if(enemyFloor + 1 < HouseNew.Count){
+                                randomRoom = Random.Range(0,HouseNew[enemyFloor+1].Count);
+                                wanderDestination = HouseNew[enemyFloor+1][randomRoom];
+                                findladder(1);
+                                enemyPath.Add(wanderDestination.center);
+                            }
+                            break;
+                		default:
+                            break;
+                	}
+                    
+                    break;
+	            default:
+                    break;
+	        }
+        }
+
+        if(roomManager.PlayerRoom == enemyRoom /*&& player.hiding == false*/){
+            enemyState = State.Hunting;
+        }
+    }
+
+    void Hunt() {
+        if(exitUnlocked){huntTimer = huntTimerMax;}
+        if(roomManager.PlayerRoom == enemyRoom /*&& player.hiding == false*/){
+            huntTimer = huntTimerMax;
+            enemyPath.Clear();
+            
+        }
+       RoomProperties playerProp = roomManager.PlayerRoom.GetComponent<RoomProperties>();
+        if(/*(roomManager.CurrentStair || roomManager.CurrentLadder) &&*/ player.transform.position.y > enemyPosition.y + 1f){
+            findladder(1);
+        } else if(/*(roomManager.CurrentStair || roomManager.CurrentLadder) &&*/ player.transform.position.y < enemyPosition.y - 1f){
+            findladder(0);
+        } else {
+            pathTarget = RoomProperties.Type.none;
+            
+        }
+        enemyPath.Add(new Vector2(player.transform.position.x,player.transform.position.y));
+        moveToDestination();
+        if(huntTimer < 0){ huntTimer = 0; enemyState = State.Wandering; wanderDestination = null;}
+    }
+
+    void Bang(){
+        if(Door == null){return;}
+        int direction = 0;
+        if(Door.needKey){
+            if(enemyPosition.x > Door.gameObject.transform.position.x){direction = -1;}
+            else {direction = 1;}
+            revertState();
+            enemyPath.Insert(0, HouseNew[enemyFloor][enemyRoom.GetComponent<RoomProperties>().room - direction].center);
+            wanderDestination = null;
+        }
+    }
+
+    public void revertState(){
+        switch (enemyState)
+	    {
+            case State.Wandering:
+                break;
+            case State.Hunting:
+                break;
+            case State.Climbing:
+                break;
+            case State.Opening:
+                Door = null;
+                break;
+            default:
+                break;
+	    }
+        enemyState = enemyStoredState;
+    }
+
+    public void changeState(State newState){
+        switch (newState)
+	    {
+		    case State.Wandering:
+             break;
+            case State.Hunting:
+             break;
+            case State.Climbing:
+             break;
+            default:
+            break;
+	    }
     }
 }
