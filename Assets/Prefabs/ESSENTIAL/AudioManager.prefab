@@ -104,3 +104,89 @@ MonoBehaviour:
     loop: 0
     pitch: 1
     source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 528a6ecbe091b66439c825d42eeeac34, type: 3}
+    name: enemyWalk
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: e091f10ed6c7bae49bb1b25ec7a92fdf, type: 3}
+    name: enemyRun
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: a7de1f244d277384389f815142b5ef16, type: 3}
+    name: enemyStairs
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: ddf3a48663a0f084180f77f76c548ddc, type: 3}
+    name: enemyLadder
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 4268b6bf8b746194c8d551c76a6b1099, type: 3}
+    name: enemyDoor
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: b30f59c7bf77a97459698a87d267a79d, type: 3}
+    name: enemyLost
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: d694357fdfa185b44b8edb31fb5660f4, type: 3}
+    name: enemyDetect
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  wanderGrunts:
+  - clip: {fileID: 8300000, guid: 035b05643c42b4144892717548213d74, type: 3}
+    name: enemyWander
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 79e214207f088d84199c6e928b76d58a, type: 3}
+    name: enemyWander1
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 6940b2f297240a84f914ec268be10f74, type: 3}
+    name: enemyWander2
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  huntGrunts:
+  - clip: {fileID: 8300000, guid: e250aa36a1a194a46acce6078f901d0a, type: 3}
+    name: enemyHunt
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: d81d7bf3b368d6640932d0db3646abcc, type: 3}
+    name: enemyHunt1
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 9fc0211bff742e143a7b97799e194c85, type: 3}
+    name: enemyHunt2
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: b2cb2191e7eab364490d301a22041431, type: 3}
+    name: enemyHunt3
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}

@@ -86,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     roomManager.CurrentHidingSpot = hidingSpot;
 
-                    audioManager.Play("hide");
+                    audioManager.Play("hide", gameObject);
                     if (specialPlayerState == SpecialPlayerState.Hiding)
                     {
                         specialPlayerState = SpecialPlayerState.None;
@@ -215,6 +215,7 @@ public class PlayerMovement : MonoBehaviour
                 roomManager.CurrentStair = null;
                 gameObject.GetComponent<Rigidbody>().useGravity = true;
                 gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                //animator.gameObject.transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y + 90, transform.rotation.z);
             }
         }
 
@@ -306,7 +307,7 @@ public class PlayerMovement : MonoBehaviour
                     futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Collider>().bounds.size.y / 2 + GetComponent<Collider>().bounds.extents.y + 0.000001f);
 
                     // player has touched the floor while on ladder or stairs
-                    if (specialPlayerState == SpecialPlayerState.OnLadder || specialPlayerState == SpecialPlayerState.Stairs)
+                    if (specialPlayerState == SpecialPlayerState.OnLadder || specialPlayerState == SpecialPlayerState.Stairs && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)))
                     {
                         touchingFloorVerticalMovement = true;
                     }
@@ -359,7 +360,7 @@ public class PlayerMovement : MonoBehaviour
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                         transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
-                        audioManager.PlayLoopSound("playerRun");
+                        audioManager.PlayLoopSound("playerRun", gameObject);
                         break;
                     case PlayerMoveControl.Right:
                         movement = new Vector3(1.0f, 0.0f);
@@ -370,7 +371,7 @@ public class PlayerMovement : MonoBehaviour
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                         transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
-                        audioManager.PlayLoopSound("playerRun");
+                        audioManager.PlayLoopSound("playerRun", gameObject);
                         break;
                     default:
                         movement = new Vector3(0.0f, 0.0f);
@@ -395,7 +396,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isScaling", false);
                         animator.SetBool("isHiding", false);
                         animator.enabled = true;
-                        audioManager.PlayLoopSound("playerLadder");
+                        audioManager.PlayLoopSound("playerLadder", gameObject);
                         break;
                     case PlayerMoveControl.Up:
                         // set the z value
@@ -407,7 +408,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isScaling", false);
                         animator.SetBool("isHiding", false);
                         animator.enabled = true;
-                        audioManager.PlayLoopSound("playerLadder");
+                        audioManager.PlayLoopSound("playerLadder", gameObject);
                         break;
                     default:
                         animator.enabled = false; // pause animation
@@ -435,7 +436,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                             animator.enabled = true;
-                            audioManager.PlayLoopSound("playerStairs");
+                            audioManager.PlayLoopSound("playerStairs", gameObject);
                             break;
                         case PlayerMoveControl.Right:
                         case PlayerMoveControl.Up:
@@ -449,7 +450,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                             animator.enabled = true;
-                            audioManager.PlayLoopSound("playerStairs");
+                            audioManager.PlayLoopSound("playerStairs", gameObject);
                             break;
                         default:
                             animator.enabled = false; // pause animation
@@ -474,7 +475,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
                             animator.enabled = true;
-                            audioManager.PlayLoopSound("playerStairs");
+                            audioManager.PlayLoopSound("playerStairs", gameObject);
                             break;
                         case PlayerMoveControl.Left:
                         case PlayerMoveControl.Up:
@@ -488,7 +489,7 @@ public class PlayerMovement : MonoBehaviour
                             animator.SetBool("isHiding", false);
                             transform.rotation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
                             animator.enabled = true;
-                            audioManager.PlayLoopSound("playerStairs");
+                            audioManager.PlayLoopSound("playerStairs", gameObject);
                             break;
                         default:
                             animator.enabled = false;

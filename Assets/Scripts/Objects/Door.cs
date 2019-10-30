@@ -69,11 +69,11 @@ public class Door : MonoBehaviour
 
                     if (doorOpen)
                     {
-                        FindObjectOfType<AudioManager>().Play("playerOpen");
+                        FindObjectOfType<AudioManager>().Play("playerOpen", gameObject);
                     }
                     else
                     {
-                        FindObjectOfType<AudioManager>().Play("playerClose");
+                        FindObjectOfType<AudioManager>().Play("playerClose", gameObject);
                     }
 
                     if (transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
@@ -85,7 +85,7 @@ public class Door : MonoBehaviour
                 }
                 else
                 {
-                    FindObjectOfType<AudioManager>().Play("doorLocked");
+                    FindObjectOfType<AudioManager>().Play("doorLocked", gameObject);
                 }
             }
         }
@@ -117,6 +117,9 @@ public class Door : MonoBehaviour
                         animator.SetBool("doorOpen", true);
                         doorOpen = true;
                         doorOpenTimer = 3f;
+
+                        // audio
+                        FindObjectOfType<AudioManager>().Play("enemyDoor", gameObject);
                     }
                 }
             }
@@ -136,7 +139,7 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
-        FindObjectOfType<AudioManager>().Play("doorUnlocked");
+        FindObjectOfType<AudioManager>().Play("doorUnlocked", gameObject);
         AlterDoorLight(unlockColor);
     }
 

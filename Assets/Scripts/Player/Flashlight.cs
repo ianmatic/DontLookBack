@@ -21,7 +21,7 @@ public class Flashlight : MonoBehaviour
             if (GetComponent<Light>().enabled)
             {
                 GetComponent<Light>().enabled = false;
-                FindObjectOfType<AudioManager>().Play("flashlight");
+                FindObjectOfType<AudioManager>().Play("flashlight", gameObject);
             }
         }
         else
@@ -29,7 +29,7 @@ public class Flashlight : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F))
             {
                 GetComponent<Light>().enabled = !GetComponent<Light>().enabled;
-                FindObjectOfType<AudioManager>().Play("flashlight");
+                FindObjectOfType<AudioManager>().Play("flashlight", gameObject);
             }
         }
 
