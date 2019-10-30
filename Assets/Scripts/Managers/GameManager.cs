@@ -2,26 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    #region Instance Creation
-
-    private static GameManager _instance;
-
-    public static GameManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = new GameManager();
-            }
-
-            return _instance;
-        }
-    }
-
-    #endregion
 
     private int currentLevel;
     private const int lastLevel = 3;

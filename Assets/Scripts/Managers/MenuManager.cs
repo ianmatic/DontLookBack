@@ -11,6 +11,7 @@ public class MenuManager : MonoBehaviour
     {
         manager = GameManager.Instance;
         GameObject levelSelectButtons = GameObject.Find("LevelSelection_Panel");
+        levelSelectButtons.SetActive(false);
         for(int i = 1; i < levelSelectButtons.transform.childCount; i++)
         {
             if(!GameManager.Instance.IsLevelBeat(i))
