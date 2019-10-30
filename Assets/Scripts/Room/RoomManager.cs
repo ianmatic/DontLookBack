@@ -30,6 +30,7 @@ public class RoomManager : MonoBehaviour
         enemyList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
         enemyRoomList = new List<GameObject>();
         enemyRoomList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+        enemyRoomList[0] = FindCurrentEnemyRoom();
         ladderList = new List<GameObject>();
         ladderList.AddRange(GameObject.FindGameObjectsWithTag("Ladder"));
         stairList = new List<GameObject>();
@@ -54,6 +55,8 @@ public class RoomManager : MonoBehaviour
         {
             TransitionToRoom(currentPlayerRoom);
         }
+
+        enemyRoomList[0] = FindCurrentEnemyRoom();
     }
 
     /// <summary>
@@ -120,6 +123,47 @@ public class RoomManager : MonoBehaviour
         return null;
     }
 
+    private GameObject FindCurrentEnemyRoom()
+    {
+        foreach (GameObject room in roomList)
+        {
+            if (room.GetComponent<BoxCollider>().bounds.Contains(enemyList[0].transform.position))
+            {
+                return room;
+            }
+        }
+        return null;
+    }
+    public List<List<RoomProperties>> buildHouseNew()
+    {
+        List<List<RoomProperties>> Rooms = new List<List<RoomProperties>>();
+
+        foreach (GameObject room in roomList)
+        {
+            RoomProperties roomProp = room.GetComponent<RoomProperties>();
+            if (roomProp.floor >= Rooms.Count)
+            {
+                while (roomProp.floor >= Rooms.Count)
+                {
+                    Rooms.Add(new List<RoomProperties>());
+                }
+            }
+
+            if (roomProp.room >= Rooms[roomProp.floor].Count)
+            {
+                while (roomProp.room >= Rooms[roomProp.floor].Count)
+                {
+                    Rooms[roomProp.floor].Add(new RoomProperties());
+                }
+            }
+
+            Rooms[roomProp.floor][roomProp.room] = roomProp;
+        }
+
+        return Rooms;
+    }
+
+
     /// <summary>
     /// Returns List of Rooms
     /// TESTING: Currently generates Room itself (Will grab room data from elsewhere in future)
@@ -128,7 +172,9 @@ public class RoomManager : MonoBehaviour
     public List<List<List<Vector2>>> buildHouse()
     {
         //Initialize internal variable
+        
         List<List<List<Vector2>>> Rooms = new List<List<List<Vector2>>>();
+
         //TESTING: House Generation
         //For each Floor: 3
         for (int i = 0; i < 3; i++)
@@ -187,6 +233,10 @@ public class RoomManager : MonoBehaviour
     {
         currentPlayerRoom = roomEntered;
         Debug.Log("The player's room is now " + roomEntered.name);
+    }
+    public GameObject PlayerRoom
+    {
+        get { return currentPlayerRoom;}
     }
     public List<GameObject> RoomList
     {
