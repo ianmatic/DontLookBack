@@ -13,6 +13,13 @@ public class SceneLoader : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(name);
     }
+    public void LoadSceneFromManager()
+    {
+        GameObject manager = GameObject.FindGameObjectWithTag("LevelManager");
+        string currentLevel = manager.GetComponent<RoomManager>().nameOfCurrentLevel;
+        Destroy(manager);
+        LoadScene(currentLevel);
+    }
     public void EndGame()
     {
         Application.Quit();

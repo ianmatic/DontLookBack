@@ -13,8 +13,8 @@ public class Door : MonoBehaviour
     public bool needKey;
     public bool exitDoor;
 
-    public Material lockedTexture;
-    public Material unlockedTexture;
+    private Color lockColor;
+    private Color unlockColor;
 
     void Start()
     {
@@ -22,9 +22,12 @@ public class Door : MonoBehaviour
         enemy = GameObject.FindGameObjectWithTag("Enemy");
         animator = gameObject.GetComponent<Animator>();
 
+        lockColor = Color.red;
+        unlockColor = Color.green;
+
         doorOpen = false;
         doorOpenTimer = 3f;
-        if(needKey) { ApplyDoorTexture(lockedTexture); }
+        if (needKey) { AlterDoorLight(lockColor); }
     }
 
     void Update()
@@ -35,13 +38,52 @@ public class Door : MonoBehaviour
             {
                 if(!needKey)
                 {
-                    animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
-                    doorOpen = !doorOpen;
+                    if(LeftOrRight(player.transform.position))
+                    {
+                        if(animator.GetBool("doorOpenLeft"))
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(animator.GetBool("doorOpen"));
+                        if (animator.GetBool("doorOpen"))
+                        {
+                            animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
+                            doorOpen = !doorOpen;
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpenLeft", !animator.GetBool("doorOpenLeft"));
+                            doorOpen = !doorOpen;
+                        }   
+                    }
+                    
+
+                    if (doorOpen)
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerOpen");
+                    } else
+                    {
+                        FindObjectOfType<AudioManager>().Play("playerClose");
+                    }
+
+                    if(transform.childCount > 1) { Destroy(transform.GetChild(1).gameObject); }
 
                     if (exitDoor)
                     {
                         SceneLoader.LoadScene("victoryScene");
                     }
+                } else
+                {
+                    FindObjectOfType<AudioManager>().Play("doorLocked");
                 }
             }
         }
@@ -59,7 +101,14 @@ public class Door : MonoBehaviour
                     doorOpenTimer-= Time.deltaTime;
                     if(doorOpenTimer < 0){
                         enemyScript.revertState();
-                        animator.SetBool("doorOpen", true);
+                        if (LeftOrRight(enemy.transform.position))
+                        {
+                            animator.SetBool("doorOpen", true);
+                        }
+                        else
+                        {
+                            animator.SetBool("doorOpenLeft", true);
+                        }
                         doorOpen = true;
                         doorOpenTimer = 3f;
                     }
@@ -70,7 +119,7 @@ public class Door : MonoBehaviour
 
     bool NearDoor() // Checks if a player is near the door
     {
-        return (gameObject.transform.position - player.transform.position).magnitude < 1.5f;
+        return (gameObject.transform.position - player.transform.position).magnitude < 3f;
     }
 
     bool EnemyNearDoor()
@@ -81,12 +130,13 @@ public class Door : MonoBehaviour
     public void OpenLock() //Uses a key on the door
     {
         needKey = false;
-        ApplyDoorTexture(unlockedTexture);
+        FindObjectOfType<AudioManager>().Play("doorUnlocked");
+        AlterDoorLight(unlockColor);
     }
 
-    void ApplyDoorTexture(Material m)
+    bool LeftOrRight(Vector3 position)
     {
-        transform.GetChild(0).GetComponent<Renderer>().material = m;
+        return (gameObject.transform.position.x - position.x) > 0;
     }
 
     public bool DoorOpen
@@ -97,5 +147,11 @@ public class Door : MonoBehaviour
     public float DoorOpenTimer
     {
         get { return doorOpenTimer;}
+    }
+
+    void AlterDoorLight(Color c)
+    {
+        Light doorlight = transform.GetChild(1).GetComponent<Light>();
+        doorlight.color = c;
     }
 }

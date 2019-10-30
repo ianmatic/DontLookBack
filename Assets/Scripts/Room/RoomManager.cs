@@ -12,11 +12,14 @@ public class RoomManager : MonoBehaviour
     private List<GameObject> stairList;
     private List<GameObject> keyList;
     private List<GameObject> doorList;
+    private List<GameObject> hidingSpotList;
     private GameObject currentPlayerRoom;
     private GameObject oldPlayerRoom;
     private GameObject player;
     private GameObject currentStair;
     private GameObject currentLadder;
+    private GameObject currentHidingSpot;
+    public string nameOfCurrentLevel;
 
     // Start is called before the first frame update
     void Awake()
@@ -37,7 +40,11 @@ public class RoomManager : MonoBehaviour
         keyList.AddRange(GameObject.FindGameObjectsWithTag("Key"));
         doorList = new List<GameObject>();
         doorList.AddRange(GameObject.FindGameObjectsWithTag("Door"));
+        hidingSpotList = new List<GameObject>();
+        hidingSpotList.AddRange(GameObject.FindGameObjectsWithTag("HidingSpot"));
         player = GameObject.FindGameObjectWithTag("Player");
+        nameOfCurrentLevel = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
@@ -252,6 +259,11 @@ public class RoomManager : MonoBehaviour
         get { return currentLadder; }
         set { currentLadder = value; }    
     }
+    public GameObject CurrentHidingSpot
+    {
+        get { return currentHidingSpot; }
+        set { currentHidingSpot = value; }
+    }
     public List<GameObject> StairList
     {
         get { return stairList; }
@@ -265,6 +277,11 @@ public class RoomManager : MonoBehaviour
     public List<GameObject> DoorList
     {
         get { return doorList; }
+    }
+
+    public List<GameObject> HidingSpotList
+    {
+        get { return hidingSpotList; }
     }
 
     public List<GameObject> KeyList

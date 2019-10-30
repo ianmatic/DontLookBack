@@ -12,6 +12,7 @@ TagManager:
   - RightStair
   - Key
   - Door
+  - HidingSpot
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Player
+  - Enemy
   - 
   - 
   - 
