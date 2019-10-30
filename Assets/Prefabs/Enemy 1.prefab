@@ -45,65 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c238990288b3147888e4c00bb694f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomWidth: 10
-  roomHeight: 4.7
-  baseY: 7.7
-  houseData:
-  - floorData:
-    - roomData:
-      - {x: 0, y: 0}
-      - {x: -4.5, y: 7.7}
-    - roomData:
-      - {x: 1, y: 1}
-      - {x: 5.5, y: 7.7}
-  - floorData:
-    - roomData:
-      - {x: 1, y: 0}
-      - {x: 5.5, y: 12.4}
-    - roomData:
-      - {x: 2, y: 1}
-      - {x: 15.5, y: 12.38}
-      - {x: 0, y: 0}
-      - {x: 19, y: 12.4}
-    - roomData:
-      - {x: 0, y: 0}
-      - {x: 25.5, y: 12.4}
-    - roomData:
-      - {x: 1, y: 1}
-      - {x: 35.5, y: 12.4}
-    - roomData:
-      - {x: 0, y: 0}
-      - {x: 45.5, y: 12.4}
-  - floorData:
-    - roomData:
-      - {x: 1, y: 1}
-      - {x: 5.5, y: 17.1}
-    - roomData:
-      - {x: 2, y: 0}
-      - {x: 15.5, y: 17.1}
-      - {x: 14, y: 17.1}
-      - {x: 0, y: 0}
-    - roomData:
-      - {x: 2, y: 1}
-      - {x: 25.5, y: 17.1}
-      - {x: 0, y: 0}
-      - {x: 22.5, y: 17.1}
-    - roomData:
-      - {x: 1, y: 0}
-      - {x: 35.5, y: 17.1}
-  - floorData:
-    - roomData:
-      - {x: 1, y: 0}
-      - {x: 5.5, y: 21.8}
-    - roomData:
-      - {x: 0, y: 0}
-      - {x: 15.5, y: 21.8}
-    - roomData:
-      - {x: 2, y: 0}
-      - {x: 25.5, y: 21.8}
-      - {x: 29, y: 21.8}
-      - {x: 0, y: 0}
-  playerRealFloor: 0
   enemy: {fileID: 1295236148340794502}
   player: {fileID: 0}
 --- !u!65 &412890284
@@ -117,8 +58,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0, y: 0.9311727, z: 0}
+  m_Size: {x: 0.6476351, y: 2.0965586, z: 0.7966854}
+  m_Center: {x: 0.0028882027, y: 1.0446348, z: 0.1016573}
 --- !u!1001 &9217800077197459922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -128,7 +69,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 156854, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_Name
-      value: GHOUL_PBR
+      value: enemyModel
       objectReference: {fileID: 0}
     - target: {fileID: 156854, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_Layer
@@ -274,6 +215,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 7672096779774534254, guid: 09efc08a66079d1489a0aee5d107d882,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 142314, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -285,6 +231,21 @@ PrefabInstance:
     - target: {fileID: 197624, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5249018467184006057, guid: 09efc08a66079d1489a0aee5d107d882,
+        type: 3}
+      propertyPath: showAdditionalSettings
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5249018467184006057, guid: 09efc08a66079d1489a0aee5d107d882,
+        type: 3}
+      propertyPath: lightlayersMask
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4471361735447461939, guid: 09efc08a66079d1489a0aee5d107d882,
+        type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 485058, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_LocalRotation.x
@@ -437,26 +398,6 @@ PrefabInstance:
     - target: {fileID: 199484, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
       propertyPath: m_Layer
       value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7672096779774534254, guid: 09efc08a66079d1489a0aee5d107d882,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4471361735447461939, guid: 09efc08a66079d1489a0aee5d107d882,
-        type: 3}
-      propertyPath: m_RenderingLayerMask
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5249018467184006057, guid: 09efc08a66079d1489a0aee5d107d882,
-        type: 3}
-      propertyPath: showAdditionalSettings
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5249018467184006057, guid: 09efc08a66079d1489a0aee5d107d882,
-        type: 3}
-      propertyPath: lightlayersMask
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09efc08a66079d1489a0aee5d107d882, type: 3}
