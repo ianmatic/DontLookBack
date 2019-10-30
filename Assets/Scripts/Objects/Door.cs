@@ -88,11 +88,12 @@ public class Door : MonoBehaviour
             }
         }
 
+
         if(EnemyNearDoor())
         {
+            enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
+            enemyScript.Door = this;
             if(!doorOpen){
-                enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
-                enemyScript.Door = this;
                 if(enemyScript.enemyStateProp != enemyPathfinding.State.Opening){
                 enemyScript.enemyStateProp = enemyPathfinding.State.Opening;
                 }
@@ -112,6 +113,11 @@ public class Door : MonoBehaviour
                         doorOpen = true;
                         doorOpenTimer = 3f;
                     }
+                }
+            }
+            else {
+                if(enemyScript.enemyStateProp == enemyPathfinding.State.Opening){
+                enemyScript.revertState();
                 }
             }
         }
