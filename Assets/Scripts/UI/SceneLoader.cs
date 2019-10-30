@@ -33,7 +33,7 @@ public class SceneLoader : MonoBehaviour
     }
     public void LoadNextLevel()
     {
-        GameManager.Instance.CurrentLevel = GameManager.Instance.CurrentLevel + 1;
+        GameManager.Instance.CurrentLevel = GameManager.Instance.CurrentLevel;
         string levelName = "Level" + GameManager.Instance.CurrentLevel;
         UnityEngine.SceneManagement.SceneManager.LoadScene(levelName);
     }
