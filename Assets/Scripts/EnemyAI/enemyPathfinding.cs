@@ -5,36 +5,11 @@ using UnityEngine;
 public class enemyPathfinding : MonoBehaviour
 {
 
-    //House Setup
-    public float roomWidth;
-    public float roomHeight;
-    public float baseY;
-    
-
-    [System.Serializable]
-    public struct floorDatas
-    {
-        public roomDatas[] floorData;
-        
-    }
-
-    [System.Serializable]
-    public struct roomDatas
-    {
-        public Vector2[] roomData;
-    }
-
-    public floorDatas[] houseData = new floorDatas[3];
-
-    //TESTING:
-    public int playerRealFloor; //TESTING: Player's Actual Floor
-
     //Public:
     public GameObject enemy;  //Enemy GameObject (Incase not directly attached)
     public GameObject player; //Player GameObject (Until middleman)
 
     //Private:
-    private
     Vector2 enemyPosition; //Enemy's 2D position
     float enemyZPosition;
     //int enemyFloor; //Enemy's current Floor 
@@ -47,6 +22,8 @@ public class enemyPathfinding : MonoBehaviour
     RoomManager roomManager;
     bool enemyClimbing = false;
 
+    bool exitUnlocked = false;
+    float huntTimerMax = 10f;
     float huntTimer = 0;
     RoomProperties.Type pathTarget = RoomProperties.Type.none;
     RoomProperties.Type pathPreviousTarget = RoomProperties.Type.none;
@@ -63,12 +40,13 @@ public class enemyPathfinding : MonoBehaviour
     public List<List<List<Vector2>>> House = new List<List<List<Vector2>>> ();
     public List<List<RoomProperties>> HouseNew = new List<List<RoomProperties>>();
 
+    public Door Door { get; set; }
     private GameObject enemyRoom
     {
         get { return roomManager.EnemyRoomList[0];}
     }
     //Enemy's current Floor 
-	private int enemyFloor
+	public int enemyFloor
 	{
         //Get Floor from roomManager's enemyRoom  (0) cause only 1 enemy
 		get { return enemyRoom.GetComponent<RoomProperties>().floor;}
@@ -80,18 +58,23 @@ public class enemyPathfinding : MonoBehaviour
 		get { return roomManager.PlayerRoom.GetComponent<RoomProperties>().floor;}
     }
 
-    enum State
+    public enum State
 	{
         Wandering,
         Hunting,
         Climbing,
         Opening,
 	}
-    State enemyState = State.Wandering;
+    private State enemyStoredState;
+    private State enemyState;
+    public State enemyStateProp
+    {
+        get {return enemyState;}
+        set {enemyStoredState = enemyState; enemyState = value;}
+    }
     // Start is called before the first frame update
     void Start()
     {
-
         roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
         HouseNew = roomManager.buildHouseNew();
         /*
@@ -120,7 +103,7 @@ public class enemyPathfinding : MonoBehaviour
         //playerRoom = 1;
         //playerPosition = player.transform.position + new Vector3(0.49f,0, 0);
         */
-        
+        enemyState = State.Wandering;
 
         enemyPosition = enemy.transform.position;
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
@@ -133,13 +116,16 @@ public class enemyPathfinding : MonoBehaviour
         switch (enemyState)
 	{
 		case State.Wandering:
-                Wander();
+            Wander();
             break;
         case State.Hunting:
-                Hunt();
+            Hunt();
             break;
         case State.Climbing:
             moveToDestination();
+            break;
+        case State.Opening:
+            Bang();
             break;
         default:
             break;
@@ -239,23 +225,26 @@ public class enemyPathfinding : MonoBehaviour
                                 if(huntTimer > 0){enemyPosition.y += direction.y * (enemySpeed / 1.5f);}
                                 else{enemyPosition.y += direction.y * (enemySpeed / 2f);}
                             if(Mathf.Abs( (enemyPosition.y - enemyPath[0].y)) < 0.03f){
+                               enemyPosition = enemyPath[0];
                                enemyPath.RemoveAt(0);
                                enemyState = State.Wandering;
                                pathTarget = RoomProperties.Type.none;
 
-                                if(huntTimer > 0){enemyState = State.Hunting;}
+                                if(huntTimer > 0 || exitUnlocked){enemyState = State.Hunting;}
                             }
                              break;
                         case RoomProperties.Type.stairs:
+                            enemyZPosition = 1;
                             direction = (enemyPath[0] - enemyPosition).normalized;
                             if(huntTimer > 0){enemyPosition += direction * (enemySpeed / 1.5f);}
                                 else{enemyPosition += direction * (enemySpeed / 2f);}
                             if( (enemyPosition - enemyPath[0]).magnitude  < 0.03f){
+                                enemyPosition = enemyPath[0];
                                enemyPath.RemoveAt(0);
                                enemyState = State.Wandering;
                                pathTarget = RoomProperties.Type.none;
-                               
-                                if(huntTimer > 0){enemyState = State.Hunting;}
+                               enemyZPosition = 0;
+                                if(huntTimer > 0 || exitUnlocked){enemyState = State.Hunting;}
                             }
                              break;
                         default:
@@ -506,13 +495,13 @@ public class enemyPathfinding : MonoBehaviour
                                 if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newLadder.x)){
                                     firstDestination = newLadder;
                                     secondDestination = newLadderProp.bottomLadder.transform.position;
-                                    secondDestination.y+= 0.5f;
+                                    secondDestination.y+= 0.75f;
                                     pathTarget = RoomProperties.Type.ladder;
                                 }
                             } else {
                                 firstDestination = newLadder;
                                 secondDestination = newLadderProp.bottomLadder.transform.position;
-                                secondDestination.y+= 0.5f;
+                                secondDestination.y+= 0.75f;
                                 pathTarget = RoomProperties.Type.ladder;
                             }
                             break;
@@ -522,14 +511,16 @@ public class enemyPathfinding : MonoBehaviour
                             if(firstDestination  != new Vector2(0,0)){
                                 if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newStair.x)){
                                     firstDestination = newStair;
+                                    firstDestination.y+= 0.25f;
                                     secondDestination = newStairProp.bottomStair.transform.position;
-                                    secondDestination.y+= 0.5f;
+                                    secondDestination.y+= 0.75f;
                                     pathTarget = RoomProperties.Type.stairs;
                                 }
                             } else {
                                 firstDestination = newStair;
+                                firstDestination.y+= 0.25f;
                                 secondDestination = newStairProp.bottomStair.transform.position;
-                                secondDestination.y+= 0.5f;
+                                secondDestination.y+= 0.75f;
                                 pathTarget = RoomProperties.Type.stairs;
                             }
                             break;
@@ -551,14 +542,14 @@ public class enemyPathfinding : MonoBehaviour
                             if(firstDestination  != null){
                                 if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newLadder.x)){
                                     firstDestination = newLadder;
+                                    firstDestination.y+= 0.75f;
                                     secondDestination = newLadderProp.topLadder.transform.position;
-                                    secondDestination.y+= 0.5f;
                                     pathTarget = RoomProperties.Type.ladder;
                                 }
                             } else {
                                 firstDestination = newLadder;
+                                firstDestination.y+= 0.75f;
                                 secondDestination = newLadderProp.topLadder.transform.position;
-                                secondDestination.y+= 0.5f;
                                 pathTarget = RoomProperties.Type.ladder;
 
                             }
@@ -569,12 +560,16 @@ public class enemyPathfinding : MonoBehaviour
                             if(firstDestination  != null){
                                 if(Mathf.Abs(enemyPosition.x - firstDestination.x) > Mathf.Abs(enemyPosition.x - newStair.x)){
                                     firstDestination = newStair;
+                                    firstDestination.y+= 0.75f;
                                     secondDestination = newStairProp.topStair.transform.position;
+                                    secondDestination.y+= 0.25f;
                                     pathTarget = RoomProperties.Type.stairs;
                                 }
                             } else {
                                 firstDestination = newStair;
+                                firstDestination.y+= 0.75f;
                                 secondDestination = newStairProp.topStair.transform.position;
+                                secondDestination.y+= 0.25f;
                                 pathTarget = RoomProperties.Type.stairs;
                             }
                             break;
@@ -595,6 +590,7 @@ public class enemyPathfinding : MonoBehaviour
 
     void Wander(){
         if(wanderDestination){
+            
             moveToDestination();
         } else {
         enemyPath.Clear();
@@ -645,8 +641,9 @@ public class enemyPathfinding : MonoBehaviour
     }
 
     void Hunt() {
+        if(exitUnlocked){huntTimer = huntTimerMax;}
         if(roomManager.PlayerRoom == enemyRoom /*&& player.hiding == false*/){
-            huntTimer = 10f;
+            huntTimer = huntTimerMax;
             enemyPath.Clear();
             
         }
@@ -664,7 +661,37 @@ public class enemyPathfinding : MonoBehaviour
         if(huntTimer < 0){ huntTimer = 0; enemyState = State.Wandering; wanderDestination = null;}
     }
 
-    void changeState(State newState){
+    void Bang(){
+        if(Door == null){return;}
+        int direction = 0;
+        if(Door.needKey){
+            if(enemyPosition.x > Door.gameObject.transform.position.x){direction = -1;}
+            else {direction = 1;}
+            revertState();
+            enemyPath.Insert(0, HouseNew[enemyFloor][enemyRoom.GetComponent<RoomProperties>().room - direction].center);
+            wanderDestination = null;
+        }
+    }
+
+    public void revertState(){
+        switch (enemyState)
+	    {
+            case State.Wandering:
+                break;
+            case State.Hunting:
+                break;
+            case State.Climbing:
+                break;
+            case State.Opening:
+                Door = null;
+                break;
+            default:
+                break;
+	    }
+        enemyState = enemyStoredState;
+    }
+
+    public void changeState(State newState){
         switch (newState)
 	    {
 		    case State.Wandering:

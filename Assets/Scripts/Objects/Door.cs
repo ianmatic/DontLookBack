@@ -9,6 +9,7 @@ public class Door : MonoBehaviour
     Animator animator;
 
     bool doorOpen;
+    float doorOpenTimer;
     public bool needKey;
     public bool exitDoor;
 
@@ -22,12 +23,13 @@ public class Door : MonoBehaviour
         animator = gameObject.GetComponent<Animator>();
 
         doorOpen = false;
+        doorOpenTimer = 3f;
         if(needKey) { ApplyDoorTexture(lockedTexture); }
     }
 
     void Update()
     {
-        if(NearDoor()) // Checks if the player is near the door
+        if(NearDoor() && (!EnemyNearDoor() || !doorOpen) ) // Checks if the player is near the door
         {
             if(Input.GetKeyDown(KeyCode.E)) // Player can press 'e' to interact
             {
@@ -46,7 +48,23 @@ public class Door : MonoBehaviour
 
         if(EnemyNearDoor())
         {
-            animator.SetBool("doorOpen", true);
+            if(!doorOpen){
+                enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
+                enemyScript.Door = this;
+                if(enemyScript.enemyStateProp != enemyPathfinding.State.Opening){
+                enemyScript.enemyStateProp = enemyPathfinding.State.Opening;
+                }
+                if(!needKey)
+                {
+                    doorOpenTimer-= Time.deltaTime;
+                    if(doorOpenTimer < 0){
+                        enemyScript.revertState();
+                        animator.SetBool("doorOpen", true);
+                        doorOpen = true;
+                        doorOpenTimer = 3f;
+                    }
+                }
+            }
         }
     }
 
@@ -74,5 +92,10 @@ public class Door : MonoBehaviour
     public bool DoorOpen
     {
         get { return doorOpen; }
+    }
+
+    public float DoorOpenTimer
+    {
+        get { return doorOpenTimer;}
     }
 }
