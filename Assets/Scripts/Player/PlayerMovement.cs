@@ -320,7 +320,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void EnemyCollision()
     {
-        if (GetComponent<Collider>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Renderer>().bounds))
+        if (GetComponent<Collider>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Collider>().bounds))
         {
             KillPlayer();
         }
