@@ -742,6 +742,7 @@ public class enemyPathfinding : MonoBehaviour
             default:
                 break;
 	    }
+        if(enemyState == enemyStoredState && enemyStoredState == State.Opening){enemyStoredState = State.Wandering;}
         enemyState = enemyStoredState;
     }
     

@@ -119,7 +119,13 @@ public class Door : MonoBehaviour
                         doorOpenTimer = 3f;
                     }
                 }
+            } else {
+                if (enemyScript.enemyStateProp == enemyPathfinding.State.Opening)
+                {
+                    enemyScript.revertState();
+                }
             }
+
         }
     }
 
