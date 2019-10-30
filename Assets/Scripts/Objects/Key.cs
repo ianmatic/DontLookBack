@@ -23,6 +23,7 @@ public class Key : MonoBehaviour
     {
         if(!grabbed)
         {
+            FindObjectOfType<AudioManager>().Play("keyPickUp");
             grabbed = true;
             foreach(Door d in doors)
             {
