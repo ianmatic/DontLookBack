@@ -125,7 +125,7 @@ public class Door : MonoBehaviour
             } else {
                 if (enemyScript.enemyStateProp == enemyPathfinding.State.Opening)
                 {
-                    enemyScript.revertState();
+                    enemyScript.enemyStateProp = enemyPathfinding.State.Wandering;
                 }
             }
 
