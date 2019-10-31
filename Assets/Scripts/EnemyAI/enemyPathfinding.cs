@@ -875,7 +875,7 @@ public class enemyPathfinding : MonoBehaviour
                 }
             }
         }
-        if (searchTimer < 0)
+        if (huntTimer < 0)
         {
             enemyState = State.Wandering;
             enemyPath.Clear();
