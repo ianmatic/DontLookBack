@@ -21,7 +21,7 @@ public class enemyPathfinding : MonoBehaviour
     int playerRoom; //Player's current Room as known by the Enemy (Won't always be in sync with actual player's room)
     Vector2 enemyDestination; //Immidiate Position that Enemy is walking to.
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
-    float enemySpeed = 0.04f; //Enemy Speed    Climbing speed is half.
+    float enemySpeed = 0.08f; //Enemy Speed    Climbing speed is half.
     RoomManager roomManager;
     bool enemyClimbing = false;
 
