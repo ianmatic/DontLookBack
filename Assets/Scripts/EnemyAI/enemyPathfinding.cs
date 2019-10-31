@@ -154,6 +154,7 @@ public class enemyPathfinding : MonoBehaviour
                 Search();
                 break;
             default:
+                enemyState = State.Wandering;
                 break;
         }
         /*
