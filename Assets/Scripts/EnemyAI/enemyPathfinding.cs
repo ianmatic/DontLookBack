@@ -119,7 +119,7 @@ public class enemyPathfinding : MonoBehaviour
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, 0);
         enemyZPosition = -0.25f;
 
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
         foreach (Transform child in transform)
         {
             if (child.name == "enemyModel")
@@ -140,8 +140,8 @@ public class enemyPathfinding : MonoBehaviour
             enemyPath.Clear();
             wanderDestination = null;
         }
-        Debug.Log(enemyRoom);
-        Debug.Log(enemyFloor);
+        //Debug.Log(enemyRoom);
+        //Debug.Log(enemyFloor);
         switch (enemyState)
         {
             case State.Wandering:
@@ -183,7 +183,7 @@ public class enemyPathfinding : MonoBehaviour
         */
         if (huntTimer > 0) { Debug.Log(huntTimer); }
         if (huntTimer > 0) { huntTimer -= Time.deltaTime; }
-        Debug.Log(enemyState);
+        //Debug.Log(enemyState);
         //Once done all code: Update enemy Gameobject position
         enemy.transform.position = new Vector3(enemyPosition.x, enemyPosition.y, enemyZPosition);
     }
@@ -874,8 +874,8 @@ public class enemyPathfinding : MonoBehaviour
             {
                 enemyPosition.x = searchSpot.transform.position.x;
                 searchTimer2 -= Time.deltaTime;
-                Debug.Log("Time 1: " + searchTimer);
-                Debug.Log("Time 2: " + searchTimer2);
+                //Debug.Log("Time 1: " + searchTimer);
+                //Debug.Log("Time 2: " + searchTimer2);
                 if (searchTimer2 < 0)
                 {
                     enemyZPosition = 1f;

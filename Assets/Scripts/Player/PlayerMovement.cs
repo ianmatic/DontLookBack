@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         }
         movement = new Vector3(0.0f, 0.0f);
         roomManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<RoomManager>();
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
 
         foreach (Transform child in transform)
         {
