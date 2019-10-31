@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
     public List<Sound> wanderGrunts;
     public List<Sound> huntGrunts;
+    private Sound currentMusic;
 
     void Awake()
     {
@@ -36,7 +38,29 @@ public class AudioManager : MonoBehaviour
             s.source.pitch = s.pitch;
             s.source.loop = s.loop;
         }
+    }
 
+    private void Update()
+    {
+        switch (SceneManager.GetActiveScene().name)
+        {
+            case "MainMenu":
+            case "menuScene":
+                PlayMusic("menuMusic");
+                break;
+            case "Level1":
+            case "Level2":
+            case "Level3":
+                PlayMusic("gameMusic");
+                break;
+            case "victoryScene":
+                PlayMusic("victoryMusic");
+                break;
+            case "endingScene":
+                PlayMusic("gameOverMusic");
+                break;
+
+        }
     }
 
     /// <summary>
@@ -94,6 +118,26 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// disables current music and plays inputed music
+    /// </summary>
+    /// <param name="name"></param>
+    private void PlayMusic(string name)
+    {
+        // disable old music
+        if (currentMusic != null && currentMusic.name != name)
+        {
+            EndLoopSound(currentMusic.name);
+        }
+
+        Sound music = GetSound(name);
+        if (!music.source.isPlaying)
+        {
+            currentMusic = music;
+            Play(name);
+        }
+    }
+
 
     private void Build3DSound(Sound s, GameObject sourceObject)
     {
@@ -134,5 +178,22 @@ public class AudioManager : MonoBehaviour
     public void PlayRandomHuntGrunt(GameObject sourceObject = null)
     {
         Play(huntGrunts[Random.Range(0, huntGrunts.Count)].name, sourceObject);
+    }
+
+
+    public void Mute()
+    {
+        foreach (Sound s in sounds)
+        {
+            s.source.mute = true;
+        }
+    }
+
+    public void UnMute()
+    {
+        foreach (Sound s in sounds)
+        {
+            s.source.mute = false;
+        }
     }
 }

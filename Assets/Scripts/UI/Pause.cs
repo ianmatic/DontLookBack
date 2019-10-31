@@ -24,11 +24,16 @@ public class Pause : MonoBehaviour
             {
                 Time.timeScale = 1;
                 player.GetComponent<PlayerMovement>().enabled = true;
+                // audio
+                FindObjectOfType<AudioManager>().UnMute();
             }
             else
             {
                 Time.timeScale = 0;
                 player.GetComponent<PlayerMovement>().enabled = false;
+
+                // audio
+                FindObjectOfType<AudioManager>().Mute();
             }
         }
     }
