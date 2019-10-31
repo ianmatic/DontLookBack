@@ -14,17 +14,17 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        else
-        {
-            instance = this;
-        }
+        //if (instance)
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
+        //else
+        //{
+        //    instance = this;
+        //}
 
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         sounds.AddRange(wanderGrunts);
         sounds.AddRange(huntGrunts);

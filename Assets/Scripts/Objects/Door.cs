@@ -53,7 +53,6 @@ public class Door : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log(animator.GetBool("doorOpen"));
                         if (animator.GetBool("doorOpen"))
                         {
                             animator.SetBool("doorOpen", !animator.GetBool("doorOpen"));
