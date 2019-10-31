@@ -134,6 +134,12 @@ public class enemyPathfinding : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(enemyRoom == null){
+            enemyPosition = HouseNew[0][0].center;
+            enemyState = State.Wandering;
+            enemyPath.Clear();
+            wanderDestination = null;
+        }
         Debug.Log(enemyRoom);
         Debug.Log(enemyFloor);
         switch (enemyState)
