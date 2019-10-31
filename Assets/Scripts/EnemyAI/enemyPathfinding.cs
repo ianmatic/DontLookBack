@@ -912,7 +912,10 @@ public class enemyPathfinding : MonoBehaviour
             if (enemyPosition.x > Door.gameObject.transform.position.x) { direction = -1; }
             else { direction = 1; }
             revertState();
-            enemyPath.Insert(0, HouseNew[enemyFloor][enemyRoom.GetComponent<RoomProperties>().room - direction].center);
+            if (enemyFloor < HouseNew.Count && enemyRoom.GetComponent<RoomProperties>().room - direction < HouseNew[enemyFloor].Count)
+            {
+                enemyPath.Insert(0, HouseNew[enemyFloor][Mathf.Abs(enemyRoom.GetComponent<RoomProperties>().room - direction)].center);
+            }
             wanderDestination = null;
         }
     }

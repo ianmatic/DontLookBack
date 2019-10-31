@@ -12,7 +12,7 @@ public class SceneLoader : MonoBehaviour
     public void LoadLevel()
     {
         string levelNum;
-        if(sceneName == null) { levelNum = GameManager.Instance.CurrentLevel.ToString(); }
+        if(sceneName == "") { levelNum = GameManager.Instance.CurrentLevel.ToString(); }
         else
         {
             levelNum = sceneName;

@@ -72,7 +72,7 @@ public class AudioManager : MonoBehaviour
     {
         Sound s = GetSound(name);
         Build3DSound(s, sourceObject);
-        if (s != null)
+        if (s != null && s.source)
         {
             s.source.Play();
         }
@@ -100,7 +100,7 @@ public class AudioManager : MonoBehaviour
         // remake source at new game object
         Build3DSound(s, sourceObject);
 
-        if (!GetSound(name).source.isPlaying)
+        if (GetSound(name).source && !GetSound(name).source.isPlaying)
         {
             Play(name, sourceObject);
         }
@@ -112,7 +112,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="name"></param>
     public void EndLoopSound(string name)
     {
-        if (GetSound(name).source.isPlaying)
+        if (GetSound(name).source && GetSound(name).source.isPlaying)
         {
             GetSound(name).source.Stop();
         }
@@ -142,7 +142,7 @@ public class AudioManager : MonoBehaviour
     private void Build3DSound(Sound s, GameObject sourceObject)
     {
         // only build if not null
-        if (sourceObject && sourceObject != s.source.gameObject)
+        if (s != null && s.source != null && sourceObject != null && sourceObject != s.source.gameObject)
         {
             if (s.source)
             {
