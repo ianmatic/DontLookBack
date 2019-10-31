@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
             Bounds bottomLadder = roomManager.CurrentLadder.GetComponent<LadderProperties>().bottomLadder.GetComponent<Collider>().bounds;
 
             bool aboveTopLadder = GetComponent<Collider>().bounds.min.y > topLadder.max.y; // bottom of player is above top ladder
-            bool belowBottomLadder = futurePos.y - GetComponent<Collider>().bounds.extents.y < bottomLadder.min.y || touchingFloorVerticalMovement;  //bottom of player is below bottom ladder, with some leeway space
+            bool belowBottomLadder = GetComponent<Collider>().bounds.min.y < bottomLadder.min.y || touchingFloorVerticalMovement;  //bottom of player is below bottom ladder, with some leeway space
             if (specialPlayerState == SpecialPlayerState.OnLadder && // on stairs and above or below ladder
                 (aboveTopLadder || belowBottomLadder))
             {
@@ -181,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
             Bounds bottomStair = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
 
             bool aboveTopStair = GetComponent<Collider>().bounds.min.y > topStair.max.y; // bottom of player is above top stair
-            bool belowBottomStair = futurePos.y - GetComponent<Collider>().bounds.extents.y < bottomStair.min.y || touchingFloorVerticalMovement;  //bottom of player is below bottom ladder, with some leeway space
+            bool belowBottomStair = GetComponent<Collider>().bounds.min.y < bottomStair.min.y || touchingFloorVerticalMovement;  //bottom of player is below bottom ladder, with some leeway space
             if (specialPlayerState == SpecialPlayerState.Stairs && // on stairs and above or below stairs
                 (aboveTopStair || belowBottomStair))
             {
@@ -263,7 +263,7 @@ public class PlayerMovement : MonoBehaviour
                     futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Collider>().bounds.size.y / 2 + GetComponent<Collider>().bounds.extents.y + 0.000001f);
 
                     // player has touched the floor while on ladder or stairs
-                    if (specialPlayerState == SpecialPlayerState.OnLadder || specialPlayerState == SpecialPlayerState.Stairs && (currentHoldMoveControl == PlayerMoveControl.Down))
+                    if ((specialPlayerState == SpecialPlayerState.OnLadder || specialPlayerState == SpecialPlayerState.Stairs) && currentHoldMoveControl == PlayerMoveControl.Down)
                     {
                         touchingFloorVerticalMovement = true;
                     }
