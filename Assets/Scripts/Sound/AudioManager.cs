@@ -14,17 +14,17 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        //if (instance)
-        //{
-        //    Destroy(gameObject);
-        //    return;
-        //}
-        //else
-        //{
-        //    instance = this;
-        //}
+        if (instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            instance = this;
+        }
 
-        //DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
 
         sounds.AddRange(wanderGrunts);
         sounds.AddRange(huntGrunts);
@@ -141,12 +141,22 @@ public class AudioManager : MonoBehaviour
 
     private void Build3DSound(Sound s, GameObject sourceObject)
     {
-        // only build if not null
-        if (s != null && s.source != null && sourceObject != null && sourceObject != s.source.gameObject)
+        // after scene change, the source becomes null for 3d sounds, so rebuild the sound
+        if (s.source == null)
+        {
+            s.source = gameObject.AddComponent<AudioSource>();
+            s.source.clip = s.clip;
+
+            s.source.volume = s.volume;
+            s.source.pitch = s.pitch;
+            s.source.loop = s.loop;
+        }
+        // only build if sourceObject not null
+        if (sourceObject && sourceObject != s.source.gameObject)
         {
             if (s.source)
             {
-                Destroy(s.source);
+               Destroy(s.source);
             }
             s.source = sourceObject.AddComponent<AudioSource>();
             s.source.clip = s.clip;
