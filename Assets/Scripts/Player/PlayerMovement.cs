@@ -33,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
     private bool touchingFloorVerticalMovement = false;
     private bool atTopStair = false;
     private bool atTopLadder = false;
+    private bool touchingLeftWall = false;
+    private bool touchingRightWall = false;
     AudioManager audioManager;
     Animator animator;
 
@@ -75,18 +77,12 @@ public class PlayerMovement : MonoBehaviour
     void CheckFixedCollisions()
     {
         EnemyCollision();
-        DoorCollision();
         KeyCollision();
         RoomCollision();
+        DoorCollision();
         StairCollision();
         LadderCollision();
         HidingCollision();
-    }
-
-
-    void CheckUpdateCollisions()
-    {
-
     }
 
     void HidingCollision()
@@ -154,12 +150,14 @@ public class PlayerMovement : MonoBehaviour
                         if (child.GetComponent<Renderer>().bounds.center.x < futureBounds.center.x) // door is left of player
                         {
                             // place player on right side
+                            touchingLeftWall = true;
                             movement.x = 0;
                             futurePos = new Vector3(door.transform.position.x + child.GetComponent<Renderer>().bounds.size.x / 2 + (transform.localScale.x / 2) + 0.01f, futurePos.y);
                         }
                         else if (child.GetComponent<Renderer>().bounds.center.x > futureBounds.center.x) // door is right of player
                         {
                             // place player on left side
+                            touchingRightWall = true;
                             movement.x = 0;
                             futurePos = new Vector3(door.transform.position.x - child.GetComponent<Renderer>().bounds.size.x / 2 - GetComponent<BoxCollider>().bounds.extents.x - 0.01f, futurePos.y);
                         }
@@ -224,6 +222,8 @@ public class PlayerMovement : MonoBehaviour
     void RoomCollision()
     {
         touchingFloorVerticalMovement = false;
+        touchingLeftWall = false;
+        touchingRightWall = false;
         foreach (GameObject room in roomManager.RoomList)
         {
             foreach (Transform child in room.transform)
@@ -245,13 +245,15 @@ public class PlayerMovement : MonoBehaviour
         {
             if (wall.gameObject.name == "LeftWall")
             {
+                touchingLeftWall = true;
                 movement.x = 0;
-                futurePos = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.extents.x + GetComponent<Collider>().bounds.extents.x + 0.01f, futurePos.y);
+                transform.position = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.extents.x + GetComponent<Collider>().bounds.extents.x + 0.000000001f, transform.position.y);
             }
             if (wall.gameObject.name == "RightWall")
             {
+                touchingRightWall = true;
                 movement.x = 0;
-                futurePos = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.extents.x - GetComponent<Collider>().bounds.extents.x - 0.01f, futurePos.y);
+                transform.position = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.extents.x - GetComponent<Collider>().bounds.extents.x - 0.000000001f, transform.position.y);
             }
             if (wall.gameObject.name == "BottomWall")
             {
@@ -260,7 +262,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     movement.y = 0;
                     // super small number added to y to prevent stuck in collisions, but so small that gravity induced jitter can't be seen
-                    futurePos = new Vector3(futurePos.x, wall.position.y + wall.GetComponent<Collider>().bounds.size.y / 2 + GetComponent<Collider>().bounds.extents.y + 0.000001f);
+                    transform.position = new Vector3(transform.position.x, wall.position.y + wall.GetComponent<Collider>().bounds.size.y / 2 + GetComponent<Collider>().bounds.extents.y + 0.000001f);
 
                     // player has touched the floor while on ladder or stairs
                     if ((specialPlayerState == SpecialPlayerState.OnLadder || specialPlayerState == SpecialPlayerState.Stairs) && currentHoldMoveControl == PlayerMoveControl.Down)
@@ -291,10 +293,6 @@ public class PlayerMovement : MonoBehaviour
         gameObject.SetActive(false);
         SceneLoader.LoadScene("endingScene");
     }
-    void PlayerWins()
-    {
-        SceneLoader.LoadScene("victoryScene");
-    }
     void ChangeMovement()
     {
         Quaternion currentOrientation;
@@ -309,7 +307,11 @@ public class PlayerMovement : MonoBehaviour
                 switch (currentHoldMoveControl)
                 {
                     case PlayerMoveControl.Left:
-                        movement = new Vector3(-1.0f, 0.0f);
+                        if (!touchingLeftWall)
+                        {
+                            movement = new Vector3(-1.0f, 0.0f);
+                        }
+
                         animator.SetBool("isRunning", true);
                         animator.SetBool("isClimbing", false);
                         animator.SetBool("isScaling", false);
@@ -320,7 +322,10 @@ public class PlayerMovement : MonoBehaviour
                         audioManager.PlayLoopSound("playerRun", gameObject);
                         break;
                     case PlayerMoveControl.Right:
-                        movement = new Vector3(1.0f, 0.0f);
+                        if (!touchingRightWall)
+                        {
+                            movement = new Vector3(1.0f, 0.0f);
+                        }
                         animator.SetBool("isRunning", true);
                         animator.SetBool("isClimbing", false);
                         animator.SetBool("isScaling", false);
@@ -530,6 +535,7 @@ public class PlayerMovement : MonoBehaviour
 
                 break;
         }
+        Debug.Log(movement);
         movement *= speed * Time.deltaTime;
         futurePos = transform.position + movement; // where the player wants to go
     }
