@@ -195,7 +195,10 @@ public class AudioManager : MonoBehaviour
     {
         foreach (Sound s in sounds)
         {
-            s.source.mute = true;
+            if (s.source)
+            {
+                s.source.mute = true;
+            }
         }
     }
 
@@ -203,7 +206,10 @@ public class AudioManager : MonoBehaviour
     {
         foreach (Sound s in sounds)
         {
-            s.source.mute = false;
+            if (s.source)
+            {
+                s.source.mute = false;
+            }
         }
     }
 }

@@ -36,6 +36,12 @@ public class Pause : MonoBehaviour
                 FindObjectOfType<AudioManager>().Mute();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Tab) && pauseCanvas.activeSelf)
+        {
+            Time.timeScale = 1;
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        }
     }
     public void ResetTime()
     {

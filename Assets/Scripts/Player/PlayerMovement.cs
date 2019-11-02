@@ -63,6 +63,17 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (Time.timeScale == 1.0f)
+            {
+                Time.timeScale = 5.0f;
+            } else
+            {
+                Time.timeScale = 1.0f;
+            }
+        }
+
         ChangeMovement();
         currentHoldMoveControl = ControlHoldControl();
         currentPressMoveControl = ControlPressControl();
@@ -101,6 +112,26 @@ public class PlayerMovement : MonoBehaviour
 
     void LadderCollision()
     {
+        // reset currentLadder when not on ladder
+        if (specialPlayerState != SpecialPlayerState.OnLadder)
+        {
+            roomManager.CurrentLadder = null;
+        }
+
+        // start ladder collision
+        foreach (GameObject ladder in roomManager.LadderList)
+        {
+            Bounds topLadder = ladder.GetComponent<LadderProperties>().topLadder.GetComponent<Collider>().bounds;
+            Bounds bottomLadder = ladder.GetComponent<LadderProperties>().bottomLadder.GetComponent<Collider>().bounds;
+
+            if ((GetComponent<Collider>().bounds.Intersects(bottomLadder) || GetComponent<Collider>().bounds.Intersects(topLadder)) // touching the ladder while not already on it
+                && specialPlayerState != SpecialPlayerState.OnLadder)
+            {
+                atTopLadder = Vector3.Distance(transform.position, topLadder.center) < Vector3.Distance(transform.position, bottomLadder.center);
+                roomManager.CurrentLadder = ladder;
+            }
+        }
+
         // end ladder collision
         if (roomManager.CurrentLadder) // has used ladder
         {
@@ -118,20 +149,6 @@ public class PlayerMovement : MonoBehaviour
                 roomManager.CurrentLadder = null;
                 gameObject.GetComponent<Rigidbody>().useGravity = true;
                 gameObject.GetComponent<Rigidbody>().isKinematic = false;
-            }
-        }
-
-        // start ladder collision
-        foreach (GameObject ladder in roomManager.LadderList)
-        {
-            Bounds topLadder = ladder.GetComponent<LadderProperties>().topLadder.GetComponent<Collider>().bounds;
-            Bounds bottomLadder = ladder.GetComponent<LadderProperties>().bottomLadder.GetComponent<Collider>().bounds;
-
-            if ((GetComponent<Collider>().bounds.Intersects(bottomLadder) || GetComponent<Collider>().bounds.Intersects(topLadder)) // touching the ladder while not already on it
-                && specialPlayerState != SpecialPlayerState.OnLadder)
-            {
-                 atTopLadder = Vector3.Distance(transform.position, topLadder.center) < Vector3.Distance(transform.position, bottomLadder.center);
-                roomManager.CurrentLadder = ladder;
             }
         }
     }
@@ -172,6 +189,28 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void StairCollision()
     {
+        // reset currentStair when not on stair
+        if (specialPlayerState != SpecialPlayerState.Stairs)
+        {
+            roomManager.CurrentStair = null;
+        }
+
+        // start stair collision
+        foreach (GameObject stair in roomManager.StairList)
+        {
+            Bounds topStair = stair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
+            Bounds bottomStair = stair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
+
+            if ((GetComponent<Collider>().bounds.Intersects(bottomStair) || GetComponent<Collider>().bounds.Intersects(topStair)) // touching the stairs while not already on them
+                && specialPlayerState != SpecialPlayerState.Stairs)
+            {
+                atTopStair = Vector3.Distance(transform.position, topStair.center) < Vector3.Distance(transform.position, bottomStair.center);
+
+                roomManager.CurrentStair = stair;
+            }
+        }
+
+
         // end stair collision
         if (roomManager.CurrentStair) // has used stairs
         {
@@ -190,19 +229,6 @@ public class PlayerMovement : MonoBehaviour
                 gameObject.GetComponent<Rigidbody>().useGravity = true;
                 gameObject.GetComponent<Rigidbody>().isKinematic = false;
                 //animator.gameObject.transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y + 90, transform.rotation.z);
-            }
-        }
-        // start stair collision
-        foreach (GameObject stair in roomManager.StairList)
-        {
-            Bounds topStair = stair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds;
-            Bounds bottomStair = stair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds;
-
-            if ((GetComponent<Collider>().bounds.Intersects(bottomStair) || GetComponent<Collider>().bounds.Intersects(topStair)) // touching the stairs while not already on them
-                && specialPlayerState != SpecialPlayerState.Stairs)
-            {
-                atTopStair = Vector3.Distance(transform.position, topStair.center) < Vector3.Distance(transform.position, bottomStair.center);
-                roomManager.CurrentStair = stair;
             }
         }
     }
@@ -247,13 +273,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 touchingLeftWall = true;
                 movement.x = 0;
-                transform.position = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.extents.x + GetComponent<Collider>().bounds.extents.x + 0.000000001f, transform.position.y);
+                transform.position = new Vector3(wall.position.x + wall.GetComponent<Renderer>().bounds.extents.x + GetComponent<Collider>().bounds.extents.x - .2f, transform.position.y); ;
             }
             if (wall.gameObject.name == "RightWall")
             {
                 touchingRightWall = true;
                 movement.x = 0;
-                transform.position = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.extents.x - GetComponent<Collider>().bounds.extents.x - 0.000000001f, transform.position.y);
+                transform.position = new Vector3(wall.position.x - wall.GetComponent<Renderer>().bounds.extents.x - GetComponent<Collider>().bounds.extents.x + .2f, transform.position.y); ;
             }
             if (wall.gameObject.name == "BottomWall")
             {
@@ -279,7 +305,8 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void EnemyCollision()
     {
-        if (GetComponent<Collider>().bounds.Intersects(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Collider>().bounds))
+        GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
+        if (GetComponent<Collider>().bounds.Intersects(enemy.GetComponent<Collider>().bounds) && enemy.GetComponent<enemyPathfinding>().enemyStateProp != enemyPathfinding.State.Hunting) // enemy can kill you when not hunting you
         {
             KillPlayer();
         }
@@ -318,7 +345,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isHiding", false);
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 180, transform.rotation.z);
-                        transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
+                        transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .2f);
                         audioManager.PlayLoopSound("playerRun", gameObject);
                         break;
                     case PlayerMoveControl.Right:
@@ -332,7 +359,7 @@ public class PlayerMovement : MonoBehaviour
                         animator.SetBool("isHiding", false);
                         currentOrientation = transform.rotation;
                         targetOrientation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
-                        transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .1f);
+                        transform.rotation = Quaternion.Lerp(currentOrientation, targetOrientation, .2f);
                         audioManager.PlayLoopSound("playerRun", gameObject);
                         break;
                     default:
@@ -353,6 +380,9 @@ public class PlayerMovement : MonoBehaviour
                     {
                         if (currentPressMoveControl == PlayerMoveControl.Down)
                         {
+                            transform.position = new Vector3(roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds.center.x, 
+                                roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds.center.y + 0.8f, 
+                                roomManager.CurrentStair.GetComponent<StairProperties>().topStair.GetComponent<Collider>().bounds.center.z);
                             specialPlayerState = SpecialPlayerState.Stairs;
                             gameObject.GetComponent<Rigidbody>().useGravity = false;
                             gameObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -362,6 +392,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         if (currentPressMoveControl == PlayerMoveControl.Up)
                         {
+                            transform.position = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds.center;
                             specialPlayerState = SpecialPlayerState.Stairs;
                             gameObject.GetComponent<Rigidbody>().useGravity = false;
                             gameObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -402,12 +433,13 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case SpecialPlayerState.OnLadder:
+                audioManager.EndLoopSound("playerRun");
                 switch (currentHoldMoveControl)
                 {
                     case PlayerMoveControl.Down:
-                        // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
-                        movement = new Vector3(0.0f, -1.0f);
+                        // set the x and z values
+                        transform.position = new Vector3(roomManager.CurrentLadder.transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
+                        movement = new Vector3(0.0f, -.5f);
                         transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
@@ -417,9 +449,9 @@ public class PlayerMovement : MonoBehaviour
                         audioManager.PlayLoopSound("playerLadder", gameObject);
                         break;
                     case PlayerMoveControl.Up:
-                        // set the z value
-                        transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
-                        movement = new Vector3(0.0f, 1.0f);
+                        // set the x and z values
+                        transform.position = new Vector3(roomManager.CurrentLadder.transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
+                        movement = new Vector3(0.0f, .5f);
                         transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
@@ -435,6 +467,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case SpecialPlayerState.Stairs:
+                audioManager.EndLoopSound("playerRun");
                 StairProperties stair = roomManager.CurrentStair.GetComponent<StairProperties>();
                 Vector3 stairDir = stair.topStair.transform.position - stair.bottomStair.transform.position;
 
@@ -446,7 +479,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Down:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = -stairDir.normalized / 1.5f;
+                            movement = -stairDir.normalized / 2.0f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -460,7 +493,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Up:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = stairDir.normalized / 1.5f;
+                            movement = stairDir.normalized / 2.0f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -484,7 +517,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Down:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = -stairDir.normalized / 1.5f;
+                            movement = -stairDir.normalized / 2.0f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -498,7 +531,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Up:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = stairDir.normalized / 1.5f;
+                            movement = stairDir.normalized / 2.0f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -516,8 +549,9 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case SpecialPlayerState.Hiding:
+                audioManager.EndLoopSound("playerRun");
                 // set the z value
-                transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentHidingSpot.transform.position.z);
+                transform.position = new Vector3(roomManager.CurrentHidingSpot.transform.position.x, transform.position.y, roomManager.CurrentHidingSpot.transform.position.z);
                 transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
 
 
@@ -535,7 +569,6 @@ public class PlayerMovement : MonoBehaviour
 
                 break;
         }
-        Debug.Log(movement);
         movement *= speed * Time.deltaTime;
         futurePos = transform.position + movement; // where the player wants to go
     }
@@ -548,41 +581,65 @@ public class PlayerMovement : MonoBehaviour
     //Write all movement control options in here
     PlayerMoveControl ControlHoldControl()
     {
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) //move up
+
+        if (specialPlayerState == SpecialPlayerState.None)
         {
-            return PlayerMoveControl.Up;
+            // horizontal movement
+            if (Input.GetKey(KeyCode.A)) //move left
+            {
+                if (Input.GetKey(KeyCode.D)) // move right
+                {
+                    return PlayerMoveControl.None;
+                }
+                return PlayerMoveControl.Left;
+            }
+            else if (Input.GetKey(KeyCode.D)) //move right
+            {
+                if (Input.GetKey(KeyCode.A)) // move left
+                {
+                    return PlayerMoveControl.None;
+                }
+                return PlayerMoveControl.Right;
+            }
         }
-        else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) //move down
+        else if (specialPlayerState != SpecialPlayerState.Hiding) // ladders or stairs
         {
-            return PlayerMoveControl.Down;
-        }
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) //move left
-        {
-            return PlayerMoveControl.Left;
-        }
-        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) //move right
-        {
-            return PlayerMoveControl.Right;
+            // Vertical movement
+            if (Input.GetKey(KeyCode.W)) //move up
+            {
+                if (Input.GetKey(KeyCode.S)) // move down
+                {
+                    return PlayerMoveControl.None;
+                }
+                return PlayerMoveControl.Up;
+            }
+            else if (Input.GetKey(KeyCode.S)) //move down
+            {
+                if (Input.GetKey(KeyCode.W)) // move up
+                {
+                    return PlayerMoveControl.None;
+                }
+                return PlayerMoveControl.Down;
+            }
         }
         //no movement controls being input
         return PlayerMoveControl.None;
     }
-
     PlayerMoveControl ControlPressControl()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) //move up
+        if (Input.GetKeyDown(KeyCode.W)) //move up
         {
             return PlayerMoveControl.Up;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) //move down
+        else if (Input.GetKeyDown(KeyCode.S)) //move down
         {
             return PlayerMoveControl.Down;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) //move left
+        if (Input.GetKeyDown(KeyCode.A)) //move left
         {
             return PlayerMoveControl.Left;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) //move right
+        else if (Input.GetKeyDown(KeyCode.D)) //move right
         {
             return PlayerMoveControl.Right;
         }
