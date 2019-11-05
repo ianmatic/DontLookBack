@@ -17,12 +17,16 @@ public class GameManager : Singleton<GameManager>
 
     public void BeatLevel()
     {
-        levelBeat[currentLevel] = true;
+        if (currentLevel >= 0 && currentLevel < levelBeat.Length)
+        {
+            levelBeat[currentLevel] = true;
+        }
+
     }
 
     public bool IsLastLevel()
     {
-        return currentLevel + 1 == lastLevel;
+        return currentLevel == lastLevel;
     }
 
     public bool IsLevelBeat(int level)

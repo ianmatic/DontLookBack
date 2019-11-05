@@ -96,7 +96,7 @@ public class RoomManager : MonoBehaviour
 
 
         // turn on light and camera in new room
-        foreach (Transform child in room.transform) 
+        foreach (Transform child in room.transform)
         {
             if (child.tag == "MainCamera" || child.name == "Spot Light")
             {
@@ -126,102 +126,78 @@ public class RoomManager : MonoBehaviour
     {
         foreach (GameObject room in roomList)
         {
-            if (room.GetComponent<BoxCollider>().bounds.Contains(enemyList[0].transform.position))
+            if (room.GetComponent<BoxCollider>().bounds.Contains(GameObject.FindGameObjectWithTag("Enemy").GetComponent<Collider>().bounds.center))
             {
                 return room;
             }
         }
         return null;
     }
-    public List<List<RoomProperties>> buildHouseNew()
-    {
-        List<List<RoomProperties>> Rooms = new List<List<RoomProperties>>();
-
-        foreach (GameObject room in roomList)
-        {
-            RoomProperties roomProp = room.GetComponent<RoomProperties>();
-            if (roomProp.floor >= Rooms.Count)
-            {
-                while (roomProp.floor >= Rooms.Count)
-                {
-                    Rooms.Add(new List<RoomProperties>());
-                }
-            }
-
-            if (roomProp.room >= Rooms[roomProp.floor].Count)
-            {
-                while (roomProp.room >= Rooms[roomProp.floor].Count)
-                {
-                    Rooms[roomProp.floor].Add(new RoomProperties());
-                }
-            }
-
-            Rooms[roomProp.floor][roomProp.room] = roomProp;
-        }
-
-        return Rooms;
-    }
-
 
     /// <summary>
-    /// Returns List of Rooms
-    /// TESTING: Currently generates Room itself (Will grab room data from elsewhere in future)
+    /// Builds a house for the enemy AI to navigate through
     /// </summary>
-    /// <returns>List of Floors->Rooms->Variables</returns>
-    public List<List<List<Vector2>>> buildHouse()
+    /// <returns></returns>
+    public List<List<RoomProperties>> BuildHouse()
     {
-        //Initialize internal variable
-        
-        List<List<List<Vector2>>> Rooms = new List<List<List<Vector2>>>();
+        List<List<RoomProperties>> house = new List<List<RoomProperties>>();
 
-        //TESTING: House Generation
-        //For each Floor: 3
-        for (int i = 0; i < 3; i++)
+        // loop through all of the rooms in the level, and sort them into a house structure
+        foreach (GameObject room in roomList)
         {
-            //Add Floor
-            Rooms.Add(new List<List<Vector2>>());
-            //For each Room: 3
-            for (int j = 0; j < 3; j++)
+            RoomProperties roomProperties = room.GetComponent<RoomProperties>();
+
+
+            // foreach "floor" of the house present, add a floor to Rooms
+            while (roomProperties.floor >= house.Count)
             {
-                //Add Room
-                Rooms[i].Add(new List<Vector2>());
-                //For Each Variable
-                for (int k = 0; k < 2; k++)
-                {
-                    //SETS first variable to (0,0) IE: Not a ladder.   Sets Position in incremtes of 2fx and 4fy
-                    Rooms[i][j].Add(new Vector2(k * ((j * 10f) - 10f), k * (i * 5f) - 2f));
-                    //Debug.Log(Rooms[i][j][k]); //TESTING: Print each Room
-                }
-                //Debug.Log("Room Done"); //TESTING: Room Done Creation
+                house.Add(new List<RoomProperties>());
             }
-            //Debug.Log("Floor Done"); //TESTING: Floor Done Creation
+
+            // foreach "floor" of the house, add rooms to the "floor"
+            while (roomProperties.room >= house[roomProperties.floor].Count)
+            {
+                house[roomProperties.floor].Add(new RoomProperties());
+            }
+
+            // set the roomProperties within the House structure
+            house[roomProperties.floor][roomProperties.room] = roomProperties;
         }
-        //Debug.Log("Rooms Done"); //TESTING: Rooms Done Creation
 
-        //TESTING: Manually Set certain Rooms as Ladders.
-        //For Stairs, add extra Vector 2s to store position of Stairs going: [2]Down, [3]UP
-        //Column 0
-        //Floor 0
-        Rooms[0][0][0] = new Vector2(1f, 1f); //Ladder UP
-        //Floor 1
-        Rooms[1][0][0] = new Vector2(3f, 0f); //Ladder Down Stairs Up
-        Rooms[1][0].Add(new Vector2(0, 0));
-        Rooms[1][0].Add(new Vector2(-7f, Rooms[1][0][1].y)); //Stairs position
-        //Floor 2
-        Rooms[2][0][0] = new Vector2(2f, 0f); //Stairs Down
-        Rooms[2][0].Add(new Vector2(-13f, Rooms[2][0][1].y)); //Stairs position
-        //Column 1
-        //Floor 0
-        Rooms[0][1][0] = new Vector2(2f, 1f); //Stairs UP
-        Rooms[0][1].Add(new Vector2(0f, 0f));
-        Rooms[0][1].Add(new Vector2(-2.5f, Rooms[0][1][1].y)); //Stairs position
-        //Floor 1
-        Rooms[1][1][0] = new Vector2(2f, 0f); //Stairs Down
-        Rooms[1][1].Add(new Vector2(3.6f, Rooms[1][1][1].y)); //Stairs position
+        return house;
+    }
 
+    /// <summary>
+    /// Gets the adjacent rooms, corners included
+    /// </summary>
+    /// <param name="room"></param>
+    /// <param name="house"></param>
+    /// <returns></returns>
+    public List<GameObject> GetAdjacentRooms(GameObject room, List<List<RoomProperties>> house)
+    {
+        // first get the floor/index of room
+        int floor = room.GetComponent<RoomProperties>().floor;
+        int roomIndex = room.GetComponent<RoomProperties>().room;
 
-        //Return Finished Rooms
-        return Rooms;
+        List<GameObject> adjacentRooms = new List<GameObject>();
+        for (int i = floor - 1; i <= floor + 1; i++)
+        {
+            // skip this floor if it doesn't exist
+            if (i < 0 || i >= house.Count || house[i] == null)
+            {
+                continue;
+            }
+            for (int j = roomIndex - 1; j <= roomIndex + 1; j++)
+            {
+                if (j < 0 || j >= house[i].Count || house[i][j] == null) // skip this room if it doesn't exist
+                {
+                    continue;
+                }
+                adjacentRooms.Add(house[i][j].gameObject); // valid room
+            }
+        }
+
+        return adjacentRooms;
     }
 
     /// <summary>
@@ -235,7 +211,7 @@ public class RoomManager : MonoBehaviour
     }
     public GameObject PlayerRoom
     {
-        get { return currentPlayerRoom;}
+        get { return currentPlayerRoom; }
     }
     public List<GameObject> RoomList
     {
@@ -256,7 +232,7 @@ public class RoomManager : MonoBehaviour
     public GameObject CurrentLadder
     {
         get { return currentLadder; }
-        set { currentLadder = value; }    
+        set { currentLadder = value; }
     }
     public GameObject CurrentHidingSpot
     {
@@ -285,10 +261,11 @@ public class RoomManager : MonoBehaviour
 
     public List<GameObject> KeyList
     {
-        get {
-            for(int i = 0; i < keyList.Count; i++)
+        get
+        {
+            for (int i = 0; i < keyList.Count; i++)
             {
-                if(i < keyList.Count && keyList[i].GetComponent<Key>() == null)
+                if (i < keyList.Count && keyList[i].GetComponent<Key>() == null)
                 {
                     keyList.RemoveAt(i);
                     i--;

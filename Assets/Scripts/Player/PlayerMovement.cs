@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum SpecialPlayerState
+public enum SpecialPlayerState
 {
     OnLadder,
     None,
@@ -63,16 +63,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (Time.timeScale == 1.0f)
-            {
-                Time.timeScale = 5.0f;
-            } else
-            {
-                Time.timeScale = 1.0f;
-            }
-        }
+        Time.timeScale = 1.0f;
 
         ChangeMovement();
         currentHoldMoveControl = ControlHoldControl();
@@ -306,9 +297,9 @@ public class PlayerMovement : MonoBehaviour
     void EnemyCollision()
     {
         GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
-        if (GetComponent<Collider>().bounds.Intersects(enemy.GetComponent<Collider>().bounds) && enemy.GetComponent<enemyPathfinding>().enemyStateProp != enemyPathfinding.State.Hunting) // enemy can kill you when not hunting you
+        if (GetComponent<Collider>().bounds.Intersects(enemy.GetComponent<Collider>().bounds) && enemy.GetComponent<enemyPathfinding>().EnemyState == enemyPathfinding.State.Hunting) // enemy can't kill you when not hunting you
         {
-            KillPlayer();
+            //KillPlayer();
         }
     }
 
@@ -392,7 +383,9 @@ public class PlayerMovement : MonoBehaviour
                     {
                         if (currentPressMoveControl == PlayerMoveControl.Up)
                         {
-                            transform.position = roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds.center;
+                            transform.position = new Vector3(roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds.center.x,
+                                roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds.center.y + 0.8f,
+                                roomManager.CurrentStair.GetComponent<StairProperties>().bottomStair.GetComponent<Collider>().bounds.center.z);
                             specialPlayerState = SpecialPlayerState.Stairs;
                             gameObject.GetComponent<Rigidbody>().useGravity = false;
                             gameObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -439,7 +432,7 @@ public class PlayerMovement : MonoBehaviour
                     case PlayerMoveControl.Down:
                         // set the x and z values
                         transform.position = new Vector3(roomManager.CurrentLadder.transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
-                        movement = new Vector3(0.0f, -.5f);
+                        movement = new Vector3(0.0f, -.75f);
                         transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
@@ -451,7 +444,7 @@ public class PlayerMovement : MonoBehaviour
                     case PlayerMoveControl.Up:
                         // set the x and z values
                         transform.position = new Vector3(roomManager.CurrentLadder.transform.position.x, transform.position.y, roomManager.CurrentLadder.transform.position.z - .35f);
-                        movement = new Vector3(0.0f, .5f);
+                        movement = new Vector3(0.0f, .75f);
                         transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
                         animator.SetBool("isRunning", false);
                         animator.SetBool("isClimbing", true);
@@ -479,7 +472,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Down:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = -stairDir.normalized / 2.0f;
+                            movement = -stairDir.normalized / 1.5f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -493,7 +486,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Up:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = stairDir.normalized / 2.0f;
+                            movement = stairDir.normalized / 1.5f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -517,7 +510,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Down:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = -stairDir.normalized / 2.0f;
+                            movement = -stairDir.normalized / 1.5f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -531,7 +524,7 @@ public class PlayerMovement : MonoBehaviour
                         case PlayerMoveControl.Up:
                             // set the z value
                             transform.position = new Vector3(transform.position.x, transform.position.y, roomManager.CurrentStair.transform.position.z);
-                            movement = stairDir.normalized / 2.0f;
+                            movement = stairDir.normalized / 1.5f;
 
                             animator.SetBool("isRunning", false);
                             animator.SetBool("isClimbing", false);
@@ -656,5 +649,10 @@ public class PlayerMovement : MonoBehaviour
     public bool IsHiding
     {
         get { return specialPlayerState == SpecialPlayerState.Hiding; }
+    }
+
+    public SpecialPlayerState SpecialPlayerState
+    {
+        get { return specialPlayerState; }
     }
 }

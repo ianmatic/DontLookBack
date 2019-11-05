@@ -10,14 +10,15 @@ public class LightFlicker : MonoBehaviour
     {
         if (isFlickering)
         {
-            InvokeRepeating("lightSwitchAttempt", 1.0f, 3.0f);
+            InvokeRepeating("lightSwitchAttempt", 0.5f, 0.075f);
         }
            
     }
     void lightSwitchAttempt()
     {
-        if (Random.Range(1,10) <= 2)
+        if (Random.Range(1,6) <= 2)
         {
+            FindObjectOfType<AudioManager>().Play("lightFlicker", gameObject);
             gameObject.GetComponent<Light>().enabled = !gameObject.GetComponent<Light>().enabled;
         }
     }

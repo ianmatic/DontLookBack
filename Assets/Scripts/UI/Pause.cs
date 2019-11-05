@@ -41,6 +41,7 @@ public class Pause : MonoBehaviour
         {
             Time.timeScale = 1;
             UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            FindObjectOfType<AudioManager>().UnMute();
         }
     }
     public void ResetTime()

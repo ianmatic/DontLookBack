@@ -27,7 +27,7 @@ public class Door : MonoBehaviour
 
         doorOpen = false;
         if (needKey) { AlterDoorLight(lockColor); }
-        doorOpenTimer = 3f;
+        doorOpenTimer = 1.5f;
     }
 
     void Update()
@@ -88,43 +88,44 @@ public class Door : MonoBehaviour
                 }
             }
         }
-
-        if (EnemyNearDoor())
+        enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
+        if (EnemyNearDoor() && enemyScript.EnemyState != enemyPathfinding.State.Climbing) // enemy sometimes tries to open door while climbing, so don't check when climbing
         {
-            //if (LeftOrRight(enemy.transform.position))
-            //{
-            //    animator.SetBool("doorOpen", true);
-            //}
-            //else
-            //{
-            //    animator.SetBool("doorOpenLeft", true);
-            //}
-            enemyPathfinding enemyScript = enemy.GetComponent<enemyPathfinding>();
             if (!doorOpen)
             {
                 enemyScript.Door = this;
-                if (enemyScript.enemyStateProp != enemyPathfinding.State.Opening)
+                if (enemyScript.EnemyState != enemyPathfinding.State.Opening) // enemyStoredState not set yet
                 {
-                    enemyScript.enemyStateProp = enemyPathfinding.State.Opening;
+                    enemyScript.EnemyState = enemyPathfinding.State.Opening;
                 }
+
                 if (!needKey)
                 {
+                    if (enemyScript.EnemyStoredState == enemyPathfinding.State.Hunting)
+                    {
+                        enemyScript.HuntTimer -= Time.deltaTime;
+                    }
                     doorOpenTimer -= Time.deltaTime;
                     if (doorOpenTimer < 0)
                     {
                         enemyScript.revertState();
                         animator.SetBool("doorOpen", true);
                         doorOpen = true;
-                        doorOpenTimer = 3f;
+                        doorOpenTimer = 1.5f;
 
                         // audio
                         FindObjectOfType<AudioManager>().Play("enemyDoor", gameObject);
                     }
                 }
-            } else {
-                if (enemyScript.enemyStateProp == enemyPathfinding.State.Opening)
+                else
                 {
-                    enemyScript.enemyStateProp = enemyPathfinding.State.Wandering;
+                    enemyScript.revertState();
+                    enemyScript.SendBack();
+                }
+            } else {
+                if (enemyScript.EnemyState == enemyPathfinding.State.Opening)
+                {
+                    enemyScript.revertState();
                 }
             }
 
@@ -138,7 +139,7 @@ public class Door : MonoBehaviour
 
     bool EnemyNearDoor()
     {
-        return (gameObject.transform.position - enemy.transform.position).magnitude < 2.5f;
+        return Vector2.Distance(gameObject.transform.position, enemy.transform.position) < 1.0f;
     }
 
     public void OpenLock() //Uses a key on the door
