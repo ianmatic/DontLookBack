@@ -15,6 +15,7 @@ public class VictoryManager : MonoBehaviour
         {
             Destroy(nextLevelButton);
             mainMenuButton.transform.position = new Vector3(youWon.transform.position.x, mainMenuButton.transform.position.y);
+            youWon.GetComponentInChildren<UnityEngine.UI.Text>().text = "You Won!";
         }
     }
 

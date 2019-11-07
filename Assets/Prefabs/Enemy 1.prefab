@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c238990288b3147888e4c00bb694f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 1295236148340794502}
   player: {fileID: 0}
 --- !u!65 &412890284
 BoxCollider:
@@ -59,7 +58,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0, y: 0.9311727, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &9217800077197459922
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ public class Flashlight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.245f, transform.position.z);
+        transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.35f, player.transform.position.z + 0.33f);
         if (player.GetComponent<PlayerMovement>().IsHiding)
         {
             if (GetComponent<Light>().enabled)

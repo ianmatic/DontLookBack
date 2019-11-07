@@ -10,18 +10,23 @@ public class GameManager : Singleton<GameManager>
     private bool[] levelBeat;
     protected GameManager()
     {
-        currentLevel = 0;
+        currentLevel = 1;
         levelBeat = new bool[lastLevel];
+        levelBeat[0] = true;
     }
 
     public void BeatLevel()
     {
-        levelBeat[currentLevel] = true;
+        if (currentLevel >= 0 && currentLevel < levelBeat.Length)
+        {
+            levelBeat[currentLevel] = true;
+        }
+
     }
 
     public bool IsLastLevel()
     {
-        return currentLevel + 1 == lastLevel;
+        return currentLevel == lastLevel;
     }
 
     public bool IsLevelBeat(int level)
@@ -34,17 +39,17 @@ public class GameManager : Singleton<GameManager>
     {
         get
         {
-            return currentLevel + 1;
+            return currentLevel;
         }
         set
         {
-            currentLevel = value - 1;
+            currentLevel = value;
         }
     }
 
     public void ResetLevelBeat()
     {
-        for(int i = 0; i < lastLevel; i++)
+        for(int i = 1; i < lastLevel; i++)
         {
             levelBeat[i] = false;
         }
