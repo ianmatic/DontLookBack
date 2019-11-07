@@ -69,4 +69,4 @@ Gameplay Reference (Alien: Isolation) - The core tension of our game comes from 
 ![alt text](https://i.kinja-img.com/gawker-media/image/upload/s--aDZiYWZq--/c_scale,f_auto,fl_progressive,q_80,w_800/veuxgl6ltgvwsvsf3cdx.jpg "Alien Isolation")
 
 Gameplay/UI Reference - The icons for item pickups and door opening mechanic are similar to the ones found in This War of Mine. Both game also feature puzzle aspects to traversing the building.
-![alt text](https://edge.alluremedia.com.au/m/k/2014/05/crawl3.jpg "Crawl")
+![alt text](https://images.stopgame.ru/uploads/images/160812/form/2015/08/20/1440072216.jpg "This War of Mine")
