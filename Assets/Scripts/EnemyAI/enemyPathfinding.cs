@@ -22,7 +22,6 @@ public class enemyPathfinding : MonoBehaviour
     int enemyTarget; //What type of Destination Enemy is walking to: 0: Player 1: Ladder ?: Eventually a hiding spot or such
     float enemySpeed = 4.5f; //Enemy Speed    Climbing speed is half.
     RoomManager roomManager;
-    bool enemyClimbing = false;
 
     bool exitUnlocked = false;
     float huntTimerMax = 7.5f;
@@ -31,7 +30,6 @@ public class enemyPathfinding : MonoBehaviour
     float searchTimerMax = 5f;
     float searchTimer = 0;
     RoomProperties.Type pathTarget = RoomProperties.Type.none;
-    RoomProperties.Type pathPreviousTarget = RoomProperties.Type.none;
 
 
     class Point
@@ -782,7 +780,6 @@ public class enemyPathfinding : MonoBehaviour
         }
         else // enemy can see the player
         {
-            Debug.Log("Spotted the player");
             huntTimer = huntTimerMax;
         }
     }
@@ -794,14 +791,18 @@ public class enemyPathfinding : MonoBehaviour
     /// <returns></returns>
     private bool DetectPlayerWander()
     {
-        float distance = 10.0f;
+        float distance = 7.0f;
+        if (enemyState == State.Climbing)
+        {
+            distance = 2.5f;
+        }
         foreach (Transform child in player.transform)
         {
             if (child.name == "Flashlight")
             {
                 if (child.GetComponent<Light>().enabled)
                 {
-                    distance = 15.0f;
+                    distance = distance * 1.25f;
                 }
                 break;
             }
@@ -814,7 +815,13 @@ public class enemyPathfinding : MonoBehaviour
         // this allows the enemy to see the player through a door frame
         bool facingPlayer = Physics.Raycast(GetComponent<Collider>().bounds.center, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask) && //enemy shoots a ray in their forward direction
             hit.transform.tag == "Player" &&  //enemy ray hits the player
-            Vector3.Distance(player.transform.position, transform.position) < distance * 1.5f;
+            Vector3.Distance(player.transform.position, transform.position) < distance * 1.35f;
+        Debug.DrawRay(GetComponent<Collider>().bounds.center, transform.TransformDirection(Vector3.forward) * distance * 1.5f, Color.cyan , 10);
+
+        if (!player.GetComponent<PlayerMovement>().IsHiding && (inSameRoomAndClose || facingPlayer))
+        {
+            Debug.Log("Spotted the player");
+        }
 
         return !player.GetComponent<PlayerMovement>().IsHiding && (inSameRoomAndClose || facingPlayer);
     }
@@ -824,14 +831,18 @@ public class enemyPathfinding : MonoBehaviour
     /// <returns></returns>
     private bool DetectPlayerHunt()
     {
-        float distance = 10.0f;
+        float distance = 9.0f;
+        if (enemyState == State.Climbing)
+        {
+            distance = 4.0f;
+        }
         foreach (Transform child in player.transform)
         {
             if (child.name == "Flashlight")
             {
                 if (child.GetComponent<Light>().enabled)
                 {
-                    distance = 15.0f;
+                    distance = distance * 1.25f;
                 }
                 break;
             }
@@ -843,7 +854,12 @@ public class enemyPathfinding : MonoBehaviour
         // this allows the enemy to see the player through a door frame
         bool facingPlayer = Physics.Raycast(GetComponent<Collider>().bounds.center, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask) && //enemy shoots a ray in their forward direction
             hit.transform.tag == "Player" &&  //enemy ray hits the player
-            Vector3.Distance(player.transform.position, transform.position) < distance * 1.5f;
+            Vector3.Distance(player.transform.position, transform.position) < distance * 1.35f;
+
+        if (inSameRoomAndClose || facingPlayer)
+        {
+            Debug.Log("Spotted the player");
+        }
 
         return inSameRoomAndClose || facingPlayer;
     }

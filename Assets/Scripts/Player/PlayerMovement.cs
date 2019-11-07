@@ -297,9 +297,12 @@ public class PlayerMovement : MonoBehaviour
     void EnemyCollision()
     {
         GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
-        if (GetComponent<Collider>().bounds.Intersects(enemy.GetComponent<Collider>().bounds) && enemy.GetComponent<enemyPathfinding>().EnemyState == enemyPathfinding.State.Hunting) // enemy can't kill you when not hunting you
+        if (GetComponent<Collider>().bounds.Intersects(enemy.GetComponent<Collider>().bounds))
         {
-            //KillPlayer();
+            if (enemy.GetComponent<enemyPathfinding>().EnemyState == enemyPathfinding.State.Hunting || enemy.GetComponent<enemyPathfinding>().EnemyStoredState == enemyPathfinding.State.Hunting)  // enemy can't kill you when not hunting you
+            {
+                KillPlayer();
+            }
         }
     }
 
