@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1317445580873115196
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7977200073384319734}
+  - component: {fileID: -7740006861729609393}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: AudioManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7977200073384319734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317445580873115196}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.5567646, y: -6.231966, z: 33.87303}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7740006861729609393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317445580873115196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57940cacbf42df546a05fbc37bde243a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - clip: {fileID: 8300000, guid: b01048517288ce2458ffa9aee3f9724a, type: 3}
+    name: playerRun
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: bbbcf790dda517a42b1ba380f57ae0ac, type: 3}
+    name: playerStairs
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 208071ac613140b418f09b05c15bfe9c, type: 3}
+    name: playerLadder
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 701cace6e25a8074ebc7fc46ae38a354, type: 3}
+    name: playerOpen
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 959c16cf1d61a6f4788773688d6abc93, type: 3}
+    name: playerClose
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 566b9fd9cc9120d4ca2ad38054e41947, type: 3}
+    name: doorLocked
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 30e3628b3250f7740a0f1331e2c21bf6, type: 3}
+    name: doorUnlocked
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: ecbf4a9f4b24ba048ac9b6d35766b78b, type: 3}
+    name: keyPickUp
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: ad3ae57106c488b408994d13e36310e2, type: 3}
+    name: flashlight
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 8a5ac9c80a9efee4985703d04bc3448a, type: 3}
+    name: hide
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 528a6ecbe091b66439c825d42eeeac34, type: 3}
+    name: enemyWalk
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: e091f10ed6c7bae49bb1b25ec7a92fdf, type: 3}
+    name: enemyRun
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: a7de1f244d277384389f815142b5ef16, type: 3}
+    name: enemyStairs
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: ddf3a48663a0f084180f77f76c548ddc, type: 3}
+    name: enemyLadder
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 4268b6bf8b746194c8d551c76a6b1099, type: 3}
+    name: enemyDoor
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: b30f59c7bf77a97459698a87d267a79d, type: 3}
+    name: enemyLost
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: d694357fdfa185b44b8edb31fb5660f4, type: 3}
+    name: enemyDetect
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 6ba0dda3d928c734290c21f941c3faf8, type: 3}
+    name: menuMusic
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: d372fbc1f78ae5e4fbb30df92c3e4faa, type: 3}
+    name: gameOverMusic
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: db2acc78e4a602c4e9a42da25a3acd6c, type: 3}
+    name: gameMusic
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 21a6eb3975e12a643b9d344a2796340e, type: 3}
+    name: victoryMusic
+    volume: 1
+    loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 0ab16e309159b0a439e6598870e218ba, type: 3}
+    name: lightFlicker
+    volume: 0.2
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  wanderGrunts:
+  - clip: {fileID: 8300000, guid: 035b05643c42b4144892717548213d74, type: 3}
+    name: enemyWander
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 79e214207f088d84199c6e928b76d58a, type: 3}
+    name: enemyWander1
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 6940b2f297240a84f914ec268be10f74, type: 3}
+    name: enemyWander2
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  huntGrunts:
+  - clip: {fileID: 8300000, guid: e250aa36a1a194a46acce6078f901d0a, type: 3}
+    name: enemyHunt
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: d81d7bf3b368d6640932d0db3646abcc, type: 3}
+    name: enemyHunt1
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: 9fc0211bff742e143a7b97799e194c85, type: 3}
+    name: enemyHunt2
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: b2cb2191e7eab364490d301a22041431, type: 3}
+    name: enemyHunt3
+    volume: 1
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  audioMixer: {fileID: 24300002, guid: 44ae6119b0532174586a3aa0abf7f295, type: 2}
